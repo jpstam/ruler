@@ -32,6 +32,7 @@
 
         public VoronoiGUIManager m_GUIManager;
         public MeshFilter m_meshFilter;
+        public VoronoiAI m_voronoiAI;
 
         // variables defining state of turns
         private int m_halfTurnsTaken = 0;
@@ -64,8 +65,7 @@
             m_delaunay = Delaunay.Create();
 
             // add auxiliary vertices as unowned
-            foreach (var vertex in m_delaunay.Vertices)
-            {
+            foreach(var vertex in m_delaunay.Vertices) {
                 m_ownership.Add(vertex, EOwnership.UNOWNED);
             }
 
@@ -83,28 +83,26 @@
                     new Vector2(topRight.x, bottomLeft.z)
                 });
 
+            m_voronoiAI.SetCorners(bottomLeft, topRight);
+
             VoronoiDrawer.CreateLineMaterial();
         }
 
         private void Update()
         {
-            if (Input.GetKeyDown("c"))
-            {
+            if(Input.GetKeyDown("c")) {
                 VoronoiDrawer.CircleOn = !VoronoiDrawer.CircleOn;
             }
 
-            if (Input.GetKeyDown("e"))
-            {
+            if(Input.GetKeyDown("e")) {
                 VoronoiDrawer.EdgesOn = !VoronoiDrawer.EdgesOn;
             }
 
-            if (Input.GetKeyDown("v"))
-            {
+            if(Input.GetKeyDown("v")) {
                 VoronoiDrawer.VoronoiOn = !VoronoiDrawer.VoronoiOn;
             }
 
-            if (Input.GetMouseButtonDown(0))
-            {
+            if(Input.GetMouseButtonDown(0)) {
                 ProcessTurn();
             }
         }
@@ -139,17 +137,13 @@
         /// </summary>
         private void UpdateMesh()
         {
-            if (m_meshFilter.mesh == null)
-            {
+            if(m_meshFilter.mesh == null) {
                 // create initial mesh
-                m_meshFilter.mesh = new Mesh
-                {
+                m_meshFilter.mesh = new Mesh {
                     subMeshCount = 2
                 };
                 m_meshFilter.mesh.MarkDynamic();
-            }
-            else
-            {
+            } else {
                 // clear old mesh
                 m_meshFilter.mesh.Clear();
                 m_meshFilter.mesh.subMeshCount = 2;
@@ -163,10 +157,9 @@
             };
 
             // iterate over vertices and create triangles accordingly
-            foreach (var inputNode in m_delaunay.Vertices)
-            {
+            foreach(var inputNode in m_delaunay.Vertices) {
                 // dont draw anything for unowned vertices
-                if (m_ownership[inputNode] == EOwnership.UNOWNED) continue;
+                if(m_ownership[inputNode] == EOwnership.UNOWNED) continue;
 
                 // get ownership of node
                 var playerIndex = m_ownership[inputNode] == EOwnership.PLAYER1 ? 0 : 1;
@@ -174,14 +167,13 @@
                 var face = m_DCEL.GetContainingFace(inputNode);
 
                 // cant triangulate outer face
-                if (face.IsOuter) continue;
+                if(face.IsOuter) continue;
 
                 // triangulate face polygon
                 var triangulation = Triangulator.Triangulate(face.Polygon.Outside);
 
                 // add triangles to correct list
-                foreach (var triangle in triangulation.Triangles)
-                {
+                foreach(var triangle in triangulation.Triangles) {
                     int curCount = vertices.Count;
 
                     // add triangle vertices
@@ -204,8 +196,7 @@
 
             // set correct uv
             var newUVs = new List<Vector2>();
-            foreach (var vertex in vertices)
-            {
+            foreach(var vertex in vertices) {
                 newUVs.Add(new Vector2(vertex.x, vertex.z));
             }
             m_meshFilter.mesh.uv = newUVs.ToArray();
@@ -218,13 +209,11 @@
         {
             m_playerArea = new float[2] { 0, 0 };
 
-            foreach (var inputNode in m_delaunay.Vertices)
-            {
+            foreach(var inputNode in m_delaunay.Vertices) {
                 // get dcel face containing input node
                 var face = m_DCEL.GetContainingFace(inputNode);
 
-                if (m_ownership[inputNode] != EOwnership.UNOWNED)
-                {
+                if(m_ownership[inputNode] != EOwnership.UNOWNED) {
                     // update player area with face that intersects with window
                     var playerIndex = m_ownership[inputNode] == EOwnership.PLAYER1 ? 0 : 1;
                     m_playerArea[playerIndex] += Intersector.IntersectConvex(m_meshRect, face.Polygon.Outside).Area;
@@ -240,34 +229,33 @@
         /// </summary>
         private void ProcessTurn()
         {
-            if (m_halfTurnsTaken == 0)
-            {
+            if(m_halfTurnsTaken == 0) {
                 // game has just been started
                 m_GUIManager.OnStartClicked();
             }
 
             // load victory if screen clicked after every player has taken turn
-            if (m_halfTurnsTaken >= 2 * m_turns)
-            {
-                if (m_playerArea[0] > m_playerArea[1])
-                {
+            if(m_halfTurnsTaken >= 2 * m_turns) {
+                if(m_playerArea[0] > m_playerArea[1]) {
                     SceneManager.LoadScene(m_p1Victory);
-                }
-                else
-                {
+                } else {
                     SceneManager.LoadScene(m_p2Victory);
                 }
-            }
-            else
-            {
-                // obtain mouse position vector
-                var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                pos.y = 0;
-                var me = new Vector2(pos.x, pos.z);
+            } else {
+                var me = new Vector2();
+                if(player1Turn || true) {
+                    // obtain mouse position vector
+                    var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    pos.y = 0;
+                    me = new Vector2(pos.x, pos.z);
+                    m_voronoiAI.AddMove(me);
+                } else {
+                    // Let thet AI generate a point
+                    me = m_voronoiAI.GetMove();
+                }
 
                 // check if vertex already in graph to avoid degenerate cases
-                if (m_ownership.ToList().Exists(v => MathUtil.EqualsEps(v.Key, me)))
-                {
+                if(m_ownership.ToList().Exists(v => MathUtil.EqualsEps(v.Key, me))) {
                     return;
                 }
 
@@ -278,10 +266,9 @@
 
                 // instantiate the relevant game object at click position
                 var prefab = player1Turn ? m_Player1Prefab : m_Player2Prefab;
-                var onClickObject = Instantiate(prefab, pos, Quaternion.identity) as GameObject;
+                var onClickObject = Instantiate(prefab, new Vector3(me.x, 0, me.y), Quaternion.identity) as GameObject;
 
-                if (onClickObject == null)
-                {
+                if(onClickObject == null) {
                     throw new InvalidProgramException("Couldn't instantiate m_PlayerPrefab!");
                 }
 
@@ -299,8 +286,7 @@
 
                 //Update turn counter
                 m_halfTurnsTaken += 1;
-                if (m_halfTurnsTaken >= 2 * m_turns)
-                {
+                if(m_halfTurnsTaken >= 2 * m_turns) {
                     m_GUIManager.OnLastMove();
                 }
             }
