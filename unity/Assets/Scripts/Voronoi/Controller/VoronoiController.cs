@@ -24,6 +24,7 @@
 
         // controller parameters
         public bool m_withLookAtOnPlacement = true;
+        public bool useSecondPlayerAi = true;
         public int m_turns;
 
         // names of differnt victory scenes
@@ -243,7 +244,7 @@
                 }
             } else {
                 var me = new Vector2();
-                if(player1Turn || true) {
+                if(player1Turn || !useSecondPlayerAi) {
                     // obtain mouse position vector
                     var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     pos.y = 0;

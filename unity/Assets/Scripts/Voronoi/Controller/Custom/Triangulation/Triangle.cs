@@ -2,39 +2,38 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Triangle
 {
-    public Edge e0 { get { return Edges[0]; } }
-    public Edge e1 { get { return Edges[1]; } }
-    public Edge e2 { get { return Edges[2]; } }
+    public Vertex p0 { get { return Vertices[0]; } }
+    public Vertex p1 { get { return Vertices[1]; } }
+    public Vertex p2 { get { return Vertices[2]; } }
 
-    public Edge[] Edges { get; private set; }
+    public Vertex[] Vertices { get; private set; }
 
-    public Vertex p0 { get { return e0.start; } }
-    public Vertex p1 { get { return e1.start; } }
-    public Vertex p2 { get { return e2.start; } }
-
-    private Vector2 Circumcenter;
+    public Vector2 Circumcenter { get; private set; }
     private float RadiusSquared;
 
-    public Triangle(Edge e0, Edge e1, Edge e2)
-    {
-        Edges = new Edge[3];
+    public bool Boundary { get { return p0.Boundary || p1.Boundary || p2.Boundary; } }
 
-        if(IsCounterClockwise(e0.start, e1.start, e2.start)) {
-            Edges[0] = e0;
-            Edges[1] = e1;
-            Edges[2] = e2;
+    public Triangle(Vertex p0, Vertex p1, Vertex p2)
+    {
+        Vertices = new Vertex[3];
+
+        if(IsCounterClockwise(p0, p1, p2)) {
+            Vertices[0] = p0;
+            Vertices[1] = p1;
+            Vertices[2] = p2;
         } else {
-            Edges[0] = e0;
-            Edges[1] = e2;
-            Edges[2] = e1;
+            Vertices[0] = p0;
+            Vertices[1] = p2;
+            Vertices[2] = p1;
         }
 
-        e0.AddFace(this);
-        e1.AddFace(this);
-        e2.AddFace(this);
+        p0.Faces.Add(this);
+        p1.Faces.Add(this);
+        p2.Faces.Add(this);
 
         CalculateCircumcircle();
     }
@@ -76,21 +75,24 @@ public class Triangle
         return d_squared < RadiusSquared;
     }
 
+    public bool SharesEdgeWith(Triangle triangle)
+    {
+        var sharedVertices = Vertices.Where(o => triangle.Vertices.Contains(o)).Count();
+        return sharedVertices == 2;
+    }
+
     public override bool Equals(object obj)
     {
         var triangle = obj as Triangle;
-        return triangle != null &&
-               EqualityComparer<Edge>.Default.Equals(e0, triangle.e0) &&
-               EqualityComparer<Edge>.Default.Equals(e1, triangle.e1) &&
-               EqualityComparer<Edge>.Default.Equals(e2, triangle.e2);
+        return triangle != null && Vertices.All(vertex => triangle.Vertices.Contains(vertex));
     }
 
     public override int GetHashCode()
     {
         var hashCode = 2026591105;
-        hashCode = hashCode * -1521134295 + EqualityComparer<Edge>.Default.GetHashCode(e0);
-        hashCode = hashCode * -1521134295 + EqualityComparer<Edge>.Default.GetHashCode(e1);
-        hashCode = hashCode * -1521134295 + EqualityComparer<Edge>.Default.GetHashCode(e2);
+        hashCode = hashCode * -1521134295 + EqualityComparer<Vertex>.Default.GetHashCode(p0);
+        hashCode = hashCode * -1521134295 + EqualityComparer<Vertex>.Default.GetHashCode(p1);
+        hashCode = hashCode * -1521134295 + EqualityComparer<Vertex>.Default.GetHashCode(p2);
         return hashCode;
     }
 }
