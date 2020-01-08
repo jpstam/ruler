@@ -243,12 +243,11 @@
                 }
             } else {
                 var me = new Vector2();
-                if(player1Turn || true) {
+                if(player1Turn) {
                     // obtain mouse position vector
                     var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     pos.y = 0;
                     me = new Vector2(pos.x, pos.z);
-                    m_voronoiAI.AddMove(me);
                 } else {
                     // Let thet AI generate a point
                     me = m_voronoiAI.GetMove();
@@ -258,6 +257,9 @@
                 if(m_ownership.ToList().Exists(v => MathUtil.EqualsEps(v.Key, me))) {
                     return;
                 }
+
+                // Store the vertex in the data structure of the AI
+                m_voronoiAI.AddMove(me);
 
                 // store owner of vertex
                 m_ownership.Add(me, player1Turn ? EOwnership.PLAYER1 : EOwnership.PLAYER2);

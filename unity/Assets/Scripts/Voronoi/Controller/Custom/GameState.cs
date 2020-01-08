@@ -5,6 +5,16 @@ using UnityEngine;
 
 public class GameState
 {
+    // TEMP: keep track of the order of points added (for copy of gamestate)
+    private List<Vector2> pointOrder = new List<Vector2>();
+
+
+    public Vector2 BottomLeft {
+        get; private set;
+    }
+    public Vector2 TopRight {
+        get; private set;
+    }
 
     private Triangulation triangulation;
 
@@ -13,6 +23,9 @@ public class GameState
 
     public GameState(Vector2 bottomLeft, Vector2 topRight)
     {
+        this.BottomLeft = bottomLeft;
+        this.TopRight = topRight;
+
         // Initialize Triangulation
         triangulation = new Triangulation();
 
@@ -45,6 +58,10 @@ public class GameState
 
     public void AddPoint(Vector2 point)
     {
+        // TEMP: Add points to the point order (for copy of gamestate)
+        pointOrder.Add(new Vector2(point.x, point.y));
+
+
         var badTriangles = FindBadTriangles(point);
         var polygon = FindHoleBoundary(badTriangles);
         this.polygon = polygon;
@@ -113,5 +130,9 @@ public class GameState
         foreach(Edge e in polygon) {
             Debug.DrawLine(new Vector3(e.start.X, y, e.start.Y), new Vector3(e.end.X, y, e.end.Y), Color.green, 0);
         }
+    }
+
+    public List<Vector2> GetPointOrder() {
+        return pointOrder;
     }
 }
