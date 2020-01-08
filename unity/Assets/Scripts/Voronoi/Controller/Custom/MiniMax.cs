@@ -4,29 +4,50 @@ using UnityEngine;
 
 public static class MiniMax
 {
+
+    class ScoredMove
+    {
+        public ScoredMove(Vector2 value) {
+            this.Move = value;
+        }
+
+        public Vector2 Move {
+            get; private set;
+        }
+
+        public float Score {
+            get; private set;
+        }
+
+        public void SetScore(float value) {
+            this.Score = value;
+        }
+    }
+
     private static List<Vector2> storedOptions;
 
     public static Vector2 GetBestMove(GameState gs, StrategyHandler sh, ScoreFunction sf) {
-        // First let the strategy handler determine all possible move options
+        // First let the strategy handler determine all possible move options for this round
         List<Vector2> options = sh.ComputeOptions(gs);
 
-        // Then for each option, compute a score
-        List<float> scores = sf.ComputeScores(options, gs);
+        // Convert the options to scored moves
+        List<ScoredMove> scoredMoves = options.ConvertAll(o => new ScoredMove(o));
 
+        foreach (ScoredMove scoredMove in scoredMoves) {
+            float value = DoMiniMax(scoredMove.Move, scoredMove, 1, true, gs, sh, sf);
+            scoredMove.SetScore(value);
+        }
 
-        // For now make a random move from all options
-        // TODO: Compute a score for each option and choose the highest score
-        // TODO: Finally, implement minimax using the options in recursion and the scores
-        int index = 0;
         float max = float.MinValue;
-        for (int i = 0; i < scores.Count; i++) {
-            if (scores[i] > max) {
-                max = scores[i];
-                index = i;
+        ScoredMove bestMove = scoredMoves[0];
+        foreach (ScoredMove scoredMove in scoredMoves) {
+            if (scoredMove.Score > max) {
+                max = scoredMove.Score;
+                bestMove = scoredMove;
             }
         }
 
-        Vector2 move = options[index];
+        Vector2 move = bestMove.Move;
 
         storedOptions = options;
         return move;
@@ -34,5 +55,41 @@ public static class MiniMax
 
     public static List<Vector2> GetOptions() {
         return storedOptions;
+    }
+
+    private static float DoMiniMax(Vector2 nextMove, ScoredMove scoredMove, int depth, bool maximizingPlayer, GameState gs, StrategyHandler sh, ScoreFunction sf) {
+        // TEMP: For now, just create a copy of the gamestate and apply the move option
+        GameState gsTemp = new GameState(gs.BottomLeft, gs.TopRight);
+        foreach (Vector2 point in gs.GetPointOrder()) {
+            gsTemp.AddPoint(point);
+        }
+        gsTemp.AddPoint(nextMove);
+
+        if (depth <= 0) {
+            return sf.ComputeScore(nextMove, gsTemp);
+        }
+
+        List<Vector2> options = sh.ComputeOptions(gsTemp);
+
+        if (maximizingPlayer) {
+            float max = float.MinValue;
+            foreach (Vector2 option in options) {
+                // Execute minimax on the new game state
+                float value = DoMiniMax(option, scoredMove, depth - 1, false, gsTemp, sh, sf);
+                max = Mathf.Max(max, value);
+            }
+            return max;
+        } else {
+            float min = float.MaxValue;
+            foreach (Vector2 option in options) {
+                // Execute minimax on the new game state
+                float value = DoMiniMax(option, scoredMove, depth - 1, true, gsTemp, sh, sf);
+                min = Mathf.Min(min, value);
+            }
+            return min;
+        }
+
+        // TODO: Update the code to reuse the provided gamestate after undo is done
+        //gs.Undo(option);
     }
 }

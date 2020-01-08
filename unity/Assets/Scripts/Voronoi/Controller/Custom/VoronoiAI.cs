@@ -33,7 +33,7 @@ public class VoronoiAI : MonoBehaviour
         this.bottomLeft = bottomLeft;
         this.topRight = topRight;
         gs = new GameState(new Vector2(bottomLeft.x, bottomLeft.z), new Vector2(topRight.x, topRight.z));
-        sh = new StrategyHandler().Add(new GridStrategy(6,5));
+        sh = new StrategyHandler().Add(new GridStrategy(4,3)).Add(new RandomStrategy(4));
         sf = new AreaScore();
     }
 
@@ -59,7 +59,7 @@ public class VoronoiAI : MonoBehaviour
             go.tag = "debugSphere";
         }
 
-        Debug.Log("Options = " + System.String.Join(", ", new List<Vector2>(options).ConvertAll(o => o.ToString()).ToArray()));
+        //Debug.Log("Options = " + System.String.Join(", ", new List<Vector2>(options).ConvertAll(o => o.ToString()).ToArray()));
 
         Debug.Log("Ai is making move: " + move);
         return move;
