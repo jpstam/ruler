@@ -8,14 +8,23 @@ public class Vertex
     public float X { get { return point.x; } }
     public float Y { get { return point.y; } }
 
+    public bool Boundary = false;
+
+    public List<Triangle> Faces { get; private set; }
+    public HashSet<Edge> Edges { get; private set; }
+
     public Vertex(Vector2 point)
     {
         this.point = point;
+        this.Faces = new List<Triangle>();
+        this.Edges = new HashSet<Edge>();
     }
 
     public Vertex(float x, float y)
     {
-        point = new Vector2(x, y);
+        point = new Vector2(x, y); 
+        this.Faces = new List<Triangle>();
+        this.Edges = new HashSet<Edge>();
     }
 
     public override bool Equals(object obj)

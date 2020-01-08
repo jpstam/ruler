@@ -7,23 +7,46 @@ public class Edge
     public Vertex start { get; private set; }
     public Vertex end { get; private set; }
 
-    public int faces { get; private set; }
+    public Triangle[] faces { get; private set; }
 
     public Edge(Vertex start, Vertex end)
     {
         this.start = start;
         this.end = end;
-        faces = 0;
+        faces = new Triangle[2];
+        start.Edges.Add(this);
+        end.Edges.Add(this);
     }
 
     public void AddFace(Triangle triangle)
     {
-        faces++;
+        if (faces[0] == null) {
+            faces[0] = triangle;
+        } else if (faces[1] == null) {
+            faces[1] = triangle;
+        } else {
+            throw new System.InvalidProgramException("Edge has more adjacent faces then physically possible");
+        }
     }
 
     public void RemoveFace(Triangle triangle)
     {
-        faces--;
+        if(faces[0] == triangle) {
+            faces[0] = null;
+        } else if(faces[1] == triangle) {
+            faces[1] = null;
+        }
+    }
+
+    public Triangle GetOtherFace(Triangle triangle)
+    {
+        if(faces[0] == triangle) {
+            return faces[1];
+        } else if(faces[1] == triangle) {
+            return faces[0];
+        } else {
+            return null;
+        }
     }
 
     public override bool Equals(object obj)
