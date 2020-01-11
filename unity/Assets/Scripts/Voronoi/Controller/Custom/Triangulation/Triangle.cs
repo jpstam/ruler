@@ -62,7 +62,7 @@ public class Triangle
 
     private bool IsCounterClockwise(Vertex point1, Vertex point2, Vertex point3)
     {
-        // https://stackoverflow.com/questions/39984709/how-can-i-check-wether-a-point-is-inside-the-circumcircle-of-3-points/44875841#44875841
+        // https://stackoverflow.com/a/44875841
         var result = (point2.X - point1.X) * (point3.Y - point1.Y) -
             (point3.X - point1.X) * (point2.Y - point1.Y);
         return result > 0;
@@ -79,6 +79,12 @@ public class Triangle
     {
         var sharedVertices = Vertices.Where(o => triangle.Vertices.Contains(o)).Count();
         return sharedVertices == 2;
+    }
+
+    public IEnumerable<Vertex> GetSharedVerticesWith(Triangle triangle)
+    {
+        return Vertices.Where(o => triangle.Vertices.Contains(o));
+
     }
 
     public override bool Equals(object obj)

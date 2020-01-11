@@ -13,18 +13,25 @@ public class Vertex
     public List<Triangle> Faces { get; private set; }
     public HashSet<Edge> Edges { get; private set; }
 
-    public Vertex(Vector2 point)
+    public Vertex(Vector2 point, bool isBoundary = false)
     {
+        this.Boundary = isBoundary;
         this.point = point;
         this.Faces = new List<Triangle>();
         this.Edges = new HashSet<Edge>();
     }
 
-    public Vertex(float x, float y)
+    public Vertex(float x, float y, bool isBoundary = false)
     {
+        this.Boundary = isBoundary;
         point = new Vector2(x, y); 
         this.Faces = new List<Triangle>();
         this.Edges = new HashSet<Edge>();
+    }
+
+    public Vertex Copy()
+    {
+        return new Vertex(X, Y, Boundary);
     }
 
     public override bool Equals(object obj)

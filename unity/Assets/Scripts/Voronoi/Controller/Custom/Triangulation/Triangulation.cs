@@ -4,25 +4,37 @@ using System;
 
 public class Triangulation
 {
-    public HashSet<Vertex> vertices { get; private set; }
-    public HashSet<Triangle> triangles { get; private set; }
+    public Dictionary<Vector2, Vertex> Vertices { get; private set; }
+    public HashSet<Triangle> Triangles { get; private set; }
 
     public Triangulation()
     {
-        vertices = new HashSet<Vertex>();
-        triangles = new HashSet<Triangle>();
+        Vertices = new Dictionary<Vector2, Vertex>();
+        Triangles = new HashSet<Triangle>();
     }
 
     public void Add(params Vertex[] vertices)
     {
         foreach(Vertex vertex in vertices)
-            this.vertices.Add(vertex);
+            this.Add(vertex);
+    }
+
+    public Vertex Add(Vertex vertex)
+    {
+        if(Vertices.ContainsKey(vertex.point)) {
+            Vertex existingVertex;
+            Vertices.TryGetValue(vertex.point, out existingVertex);
+            return existingVertex;
+        } else {
+            Vertices.Add(vertex.point, vertex);
+            return vertex;
+        }
     }
 
     public void Add(params Triangle[] triangles)
     {
         foreach(Triangle triangle in triangles)
-        this.triangles.Add(triangle);
+        this.Triangles.Add(triangle);
     }
 
     public void Remove(Triangle triangle)
@@ -30,7 +42,19 @@ public class Triangulation
         triangle.p0.Faces.Remove(triangle);
         triangle.p1.Faces.Remove(triangle);
         triangle.p2.Faces.Remove(triangle);
-        triangles.Remove(triangle);
+        Triangles.Remove(triangle);
+    }
+
+    public Triangulation Copy()
+    {
+        var tri = new Triangulation();
+        foreach(Triangle triangle in Triangles) {
+            var p0 = tri.Add(triangle.p0.Copy());
+            var p1 = tri.Add(triangle.p1.Copy());
+            var p2 = tri.Add(triangle.p2.Copy());
+            tri.Add(new Triangle(p0, p1, p2));
+        }
+        return tri;
     }
 
     public void DebugDraw(float y)
@@ -39,7 +63,7 @@ public class Triangulation
             Debug.DrawLine(new Vector3(e.start.X, y, e.start.Y), new Vector3(e.end.X, y, e.end.Y), Color.white, 0);
         }*/
 
-        foreach(Triangle t in triangles) {
+        foreach(Triangle t in Triangles) {
             var sx = 0.0f;
             var sy = 0.0f;
             foreach(Vertex v in t.Vertices) {

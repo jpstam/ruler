@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -7,43 +7,45 @@ public class Edge
     public Vertex start { get; private set; }
     public Vertex end { get; private set; }
 
-    public Triangle[] faces { get; private set; }
+    public Face left;
+    public Face right;
 
     public Edge(Vertex start, Vertex end)
     {
         this.start = start;
         this.end = end;
-        faces = new Triangle[2];
         start.Edges.Add(this);
         end.Edges.Add(this);
     }
 
-    public void AddFace(Triangle triangle)
+    public void SetFace(Face face)
     {
-        if (faces[0] == null) {
-            faces[0] = triangle;
-        } else if (faces[1] == null) {
-            faces[1] = triangle;
+        // From: https://stackoverflow.com/a/3461533 
+        var dotProduct = (end.X - start.X) * (face.Point.Y - start.Y) - (end.Y - start.Y) * (face.Point.X - start.X);
+        if(dotProduct > 0) {
+            left = face;
         } else {
-            throw new System.InvalidProgramException("Edge has more adjacent faces then physically possible");
+            right = face;
         }
     }
 
-    public void RemoveFace(Triangle triangle)
+    public Face GetOther(Face face)
     {
-        if(faces[0] == triangle) {
-            faces[0] = null;
-        } else if(faces[1] == triangle) {
-            faces[1] = null;
+        if(face == left) {
+            return right;
+        } else if(face == right) {
+            return left;
+        } else {
+            return null;
         }
     }
 
-    public Triangle GetOtherFace(Triangle triangle)
+    public Vertex GetOther(Vertex vertex)
     {
-        if(faces[0] == triangle) {
-            return faces[1];
-        } else if(faces[1] == triangle) {
-            return faces[0];
+        if (vertex == start) {
+            return end;
+        } else if (vertex == end) {
+            return start;
         } else {
             return null;
         }

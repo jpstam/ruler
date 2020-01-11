@@ -249,9 +249,9 @@
                     var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     pos.y = 0;
                     me = new Vector2(pos.x, pos.z);
-                    m_voronoiAI.AddMove(me);
+                    m_voronoiAI.AddMove(me, player1Turn);
                 } else {
-                    // Let thet AI generate a point
+                    // Let the AI generate a point
                     me = m_voronoiAI.GetMove();
                 }
 

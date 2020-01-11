@@ -6,11 +6,13 @@ public class Graph
 {
     public Dictionary<Vector2, Vertex> vertices { get; private set; }
     public Dictionary<Edge, Edge> Edges { get; private set; }
+    public Dictionary<Vertex, Face> Faces { get; private set; }
 
     public Graph()
     {
         this.vertices = new Dictionary<Vector2, Vertex>();
         this.Edges = new Dictionary<Edge, Edge>();
+        this.Faces = new Dictionary<Vertex, Face>();
     }
 
     public Vertex Add(Vertex vertex)
@@ -43,12 +45,35 @@ public class Graph
         vertices.TryGetValue(point, out removedPoint);
         if(removedPoint != null) {
             vertices.Remove(point);
-            Debug.Log(removedPoint);
-            Debug.Log(removedPoint.Edges);
             foreach(Edge edge in removedPoint.Edges) {
                 Edges.Remove(edge);
+                edge.left.Remove(edge);
+                edge.right.Remove(edge);
             }
         }
+    }
+
+    public Graph Copy()
+    {
+        var graph = new Graph();
+
+        foreach(Edge edge in Edges.Keys) {
+            var start = graph.Add(edge.start.Copy());
+            var end = graph.Add(edge.end.Copy());
+            graph.Add(new Edge(start, end));
+        }
+
+        foreach(KeyValuePair<Vertex, Face> pair in Faces) {
+            var face = new Face(pair.Key.Copy());
+            foreach(Edge old in pair.Value.Edges.Values) {
+                var edge = graph.Add(old);
+                face.Add(edge);
+                face.OwnedByPlayer1 = pair.Value.OwnedByPlayer1;
+            }
+            graph.Faces.Add(face.Point, face);
+        }
+
+        return graph;
     }
 
     public void DebugDraw(float y)

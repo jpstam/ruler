@@ -38,13 +38,22 @@ public class VoronoiAI : MonoBehaviour
         var y = Random.Range(bottomLeft.z, topRight.z);
         var move = new Vector2(x, y);
         Debug.Log("Ai is making move: " + move);
-        gs.AddPoint(move);
+        AddMove(move, false);
         return move;
     }
 
-    public void AddMove(Vector2 move)
+    public void AddMove(Vector2 move, bool playerOne)
     {
-        gs.AddPoint(move);
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        gs.AddPoint(move, playerOne);
+        watch.Stop();
+        Debug.Log("Added move " + move + " in " + watch.ElapsedMilliseconds + "ms");
+
+        watch = System.Diagnostics.Stopwatch.StartNew();
+        gs.Copy();
+        watch.Stop();
+        Debug.Log("Copied Gamestate in " + watch.ElapsedMilliseconds + "ms");
+
     }
 
 }
