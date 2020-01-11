@@ -260,6 +260,9 @@
                     return;
                 }
 
+                // Store the vertex in the data structure of the AI
+                m_voronoiAI.AddMove(me);
+
                 // store owner of vertex
                 m_ownership.Add(me, player1Turn ? EOwnership.PLAYER1 : EOwnership.PLAYER2);
 

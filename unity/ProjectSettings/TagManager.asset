@@ -9,6 +9,7 @@ TagManager:
   - AdvanceButtonContainer
   - HintButtonContainer
   - Soldier
+  - debugSphere
   layers:
   - Default
   - TransparentFX

@@ -5,6 +5,17 @@ using UnityEngine;
 
 public class GameState
 {
+    // TEMP: keep track of the order of points added (for copy of gamestate)
+    private List<Vector2> pointOrder = new List<Vector2>();
+
+
+    public Vector2 BottomLeft {
+        get; private set;
+    }
+    public Vector2 TopRight {
+        get; private set;
+    }
+
     private Triangulation Delauney;
     private Graph Voronoi;
 
@@ -14,6 +25,8 @@ public class GameState
 
     public GameState(Vector2 bottomLeft, Vector2 topRight)
     {
+        this.BottomLeft = bottomLeft;
+        this.TopRight = topRight;
 
         // Initialize Triangulation
         Delauney = new Triangulation();
@@ -46,6 +59,10 @@ public class GameState
 
     public void AddPoint(Vector2 point, bool playerOne)
     {
+        // TEMP: Add points to the point order (for copy of gamestate)
+        pointOrder.Add(new Vector2(point.x, point.y));
+
+
         var badTriangles = FindBadTriangles(point);
         var polygon = FindHoleBoundary(badTriangles);
         this.polygon = polygon;
@@ -196,5 +213,9 @@ public class GameState
                 Debug.DrawLine(middle, new Vector3(end.X, y, end.Y), Color.magenta, 0);
             }
         }
+    }
+
+    public List<Vector2> GetPointOrder() {
+        return pointOrder;
     }
 }
