@@ -249,7 +249,6 @@
                     var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     pos.y = 0;
                     me = new Vector2(pos.x, pos.z);
-                    m_voronoiAI.AddMove(me, player1Turn);
                 } else {
                     // Let the AI generate a point
                     me = m_voronoiAI.GetMove();
@@ -261,7 +260,7 @@
                 }
 
                 // Store the vertex in the data structure of the AI
-                m_voronoiAI.AddMove(me);
+                m_voronoiAI.AddMove(me, player1Turn);
 
                 // store owner of vertex
                 m_ownership.Add(me, player1Turn ? EOwnership.PLAYER1 : EOwnership.PLAYER2);
