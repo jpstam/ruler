@@ -57,6 +57,11 @@ public class VoronoiAI : MonoBehaviour
             go.transform.position = new Vector3(option.x, 1, option.y);
             go.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             go.tag = "debugSphere";
+            if (option.Equals(move)) {
+                go.name = "Move";
+                go.GetComponent<Renderer>().material.shader = Shader.Find("Unlit/Color");
+                go.GetComponent<Renderer>().material.color = Color.red;
+            }
         }
 
         //Debug.Log("Options = " + System.String.Join(", ", new List<Vector2>(options).ConvertAll(o => o.ToString()).ToArray()));
