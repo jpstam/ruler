@@ -50,10 +50,12 @@ public class GameState
         Delauney.Add(tr1, tr2);
     }
 
-    private GameState(Triangulation Delauney, Graph Voronoi)
+    private GameState(GameState original)
     {
-        this.Delauney = Delauney;
-        this.Voronoi = Voronoi;
+        this.BottomLeft = new Vector2(original.BottomLeft.x, original.BottomLeft.y);
+        this.TopRight = new Vector2(original.TopRight.x, original.TopRight.y);
+        this.Delauney = original.Delauney.Copy();
+        this.Voronoi = original.Voronoi.Copy();
     }
 
 
@@ -145,9 +147,7 @@ public class GameState
 
     public GameState Copy()
     {
-        var Delauney = this.Delauney.Copy();
-        var Voronoi = this.Voronoi.Copy();
-        return new GameState(Delauney, Voronoi);
+        return new GameState(this);
     }
 
     public void DebugDraw(float y, bool delauney, bool delauneyDebug, bool voronoi, bool voronoiDebug)
