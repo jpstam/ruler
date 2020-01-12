@@ -67,7 +67,6 @@ public class VoronoiAI : MonoBehaviour
         //Debug.Log("Options = " + System.String.Join(", ", new List<Vector2>(options).ConvertAll(o => o.ToString()).ToArray()));
 
         Debug.Log("Ai is making move: " + move);
-        AddMove(move, false);
         return move;
     }
 
