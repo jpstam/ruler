@@ -47,8 +47,12 @@ public class Graph
             vertices.Remove(point);
             foreach(Edge edge in removedPoint.Edges) {
                 Edges.Remove(edge);
-                edge.left.Remove(edge);
-                edge.right.Remove(edge);
+                if (edge.left != null) {
+                    edge.left.Remove(edge);
+                }
+                if (edge.right != null) {
+                    edge.right.Remove(edge);
+                }
             }
         }
     }
