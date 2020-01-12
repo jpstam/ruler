@@ -58,12 +58,9 @@ public static class MiniMax
     }
 
     private static float DoMiniMax(Vector2 nextMove, ScoredMove scoredMove, int depth, bool maximizingPlayer, GameState gs, StrategyHandler sh, ScoreFunction sf) {
-        // TEMP: For now, just create a copy of the gamestate and apply the move option
-        GameState gsTemp = new GameState(gs.BottomLeft, gs.TopRight);
-        foreach (Vector2 point in gs.GetPointOrder()) {
-            gsTemp.AddPoint(point);
-        }
-        gsTemp.AddPoint(nextMove);
+        // Create a copy of the gamestate and apply the move option
+        GameState gsTemp = gs.Copy();
+        gsTemp.AddPoint(nextMove, maximizingPlayer);
 
         if (depth <= 0) {
             return sf.ComputeScore(nextMove, gsTemp);
@@ -88,8 +85,5 @@ public static class MiniMax
             }
             return min;
         }
-
-        // TODO: Update the code to reuse the provided gamestate after undo is done
-        //gs.Undo(option);
     }
 }
