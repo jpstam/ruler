@@ -80,6 +80,38 @@ public class Graph
         return graph;
     }
 
+    public float[] ComputeArea()
+    {
+        float[] areas = new float[] { 0, 0 };
+
+        Debug.Log("------------");
+        foreach (Vertex vertex in this.Faces.Keys) {
+            Face face;
+            bool exists = this.Faces.TryGetValue(vertex, out face);
+            if (!exists) {
+                continue;
+            }
+
+            int p = face.OwnedByPlayer1 ? 0 : 1;
+
+            // Add the area for this face to the total for the owning player
+            areas[p] += face.ComputeArea();
+
+            Debug.Log("Owned by: " + face.OwnedByPlayer1);
+
+        }
+        Debug.Log("------------");
+
+        // Normalize the area such that they become percentages
+        float totalArea = areas[0] + areas[1];
+
+        areas[0] = areas[0] / Mathf.Max(totalArea, 1) * 100;
+        areas[1] = areas[1] / Mathf.Max(totalArea, 1) * 100;
+
+        // Return the areas for both players
+        return areas;
+    }
+
     public void DebugDraw(float y)
     {
         foreach(Edge e in Edges.Keys) {

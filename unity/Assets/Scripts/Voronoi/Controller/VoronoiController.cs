@@ -262,6 +262,9 @@
                 // Store the vertex in the data structure of the AI
                 m_voronoiAI.AddMove(me, player1Turn);
 
+                // Log the area computed by the voronoi AI
+                float[] areas = m_voronoiAI.gs.Voronoi.ComputeArea();
+                Debug.Log("Area: " + areas[0] + " - " + areas[1]);
                 // store owner of vertex
                 m_ownership.Add(me, player1Turn ? EOwnership.PLAYER1 : EOwnership.PLAYER2);
 

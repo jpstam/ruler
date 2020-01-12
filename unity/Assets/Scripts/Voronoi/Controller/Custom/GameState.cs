@@ -17,7 +17,7 @@ public class GameState
     }
 
     private Triangulation Delauney;
-    private Graph Voronoi;
+    public Graph Voronoi { get; private set; }
 
     private HashSet<Edge> polygon = new HashSet<Edge>();
     private HashSet<Triangle> newTriangles = new HashSet<Triangle>();

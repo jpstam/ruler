@@ -60,7 +60,7 @@ public static class MiniMax
     private static float DoMiniMax(Vector2 nextMove, ScoredMove scoredMove, int depth, bool maximizingPlayer, GameState gs, StrategyHandler sh, ScoreFunction sf) {
         // Create a copy of the gamestate and apply the move option
         GameState gsTemp = gs.Copy();
-        gsTemp.AddPoint(nextMove, maximizingPlayer);
+        gsTemp.AddPoint(nextMove, !maximizingPlayer);
 
         if (depth <= 0) {
             return sf.ComputeScore(nextMove, gsTemp);

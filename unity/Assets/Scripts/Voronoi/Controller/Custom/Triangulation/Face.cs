@@ -83,6 +83,17 @@ public class Face
         }
     }
 
+    public float ComputeArea()
+    {
+        float area = 0;
+
+        Debug.Log("edges: " + this.Edges.Count);
+
+        area += Random.Range(0f, 100f);
+
+        return area;
+    }
+
     private void FindHole()
     {
         var prev = Edges.Last();

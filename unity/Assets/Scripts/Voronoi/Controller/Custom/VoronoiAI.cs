@@ -12,7 +12,7 @@ public class VoronoiAI : MonoBehaviour
     private Vector3 bottomLeft;
     private Vector3 topRight;
 
-    private GameState gs;
+    public GameState gs { get; private set; }
     private StrategyHandler sh;
     private ScoreFunction sf;
 
