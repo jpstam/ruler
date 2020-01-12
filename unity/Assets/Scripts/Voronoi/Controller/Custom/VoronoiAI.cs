@@ -34,7 +34,11 @@ public class VoronoiAI : MonoBehaviour
         this.topRight = topRight;
         gs = new GameState(new Vector2(bottomLeft.x, bottomLeft.z), new Vector2(topRight.x, topRight.z));
         sh = new StrategyHandler().Add(new GridStrategy(4,3)).Add(new RandomStrategy(4));
-        sf = new AreaScore();
+
+        // Select a score function used by the AI
+        // sf = new AreaScore();
+        // sf = new DistanceScore();
+        sf = new StandardDeviationScore();
     }
 
     public Vector2 GetMove()
