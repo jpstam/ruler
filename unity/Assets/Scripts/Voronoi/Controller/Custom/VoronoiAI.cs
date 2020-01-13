@@ -37,9 +37,9 @@ public class VoronoiAI : MonoBehaviour
         sh = new StrategyHandler().Add(new GridStrategy(4,3)).Add(new RandomStrategy(4));
 
         // Select a score function used by the AI
-        // sf = new AreaScore();
+        sf = new AreaScore();
         // sf = new DistanceScore();
-        sf = new StandardDeviationScore();
+        // sf = new StandardDeviationScore();
     }
 
     public Vector2 GetMove()

@@ -178,6 +178,32 @@ public class Face
 
     }
 
+    public float ComputeArea()
+    {
+        float area = 0;
+
+        Debug.Log("++++++++++++++");
+
+        Debug.Log("edges: " + this.Edges.Count);
+        Debug.Log("vertices: " + this.Vertices.Count);
+
+        if (this.CutPolygon == null) return area;
+        if (this.CutPolygon.Count < 2) return area;
+
+        Debug.Log("CutPolygon: " + this.CutPolygon.Count);
+        Debug.Log("Point: " + this.Point);
+
+        for (int i = 0; i < this.CutPolygon.Count; i++) {
+            Vertex v1 = this.CutPolygon.Keys[i];
+            Vertex v2 = this.CutPolygon.Keys[(i + 1) % this.CutPolygon.Count];
+            area += v1.X * v2.Y - v1.Y * v2.X;
+        }
+
+        Debug.Log("Area: " + Mathf.Abs(area / 2f));
+
+        return Mathf.Abs(area / 2f);
+    }
+
     private bool IsPointOnEdge(Vertex vertex, Vector2 bottomLeft, Vector2 topRight)
     {
         return Mathf.Approximately(bottomLeft.x, vertex.X) 
