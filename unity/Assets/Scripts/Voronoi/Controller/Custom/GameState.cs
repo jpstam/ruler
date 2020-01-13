@@ -9,12 +9,8 @@ public class GameState
     private List<Vector2> pointOrder = new List<Vector2>();
 
 
-    public Vector2 BottomLeft {
-        get; private set;
-    }
-    public Vector2 TopRight {
-        get; private set;
-    }
+    public Vector2 BottomLeft { get; private set; }
+    public Vector2 TopRight { get; private set; }
 
     private Triangulation Delauney;
     public Graph Voronoi { get; private set; }
@@ -27,27 +23,26 @@ public class GameState
     {
         this.BottomLeft = bottomLeft;
         this.TopRight = topRight;
-
-        // Initialize Triangulation
+        Debug.Log(BottomLeft + " " + topRight);
+        // Initialize Data Structures
         Delauney = new Triangulation();
         Voronoi = new Graph();
 
-        // Border rectangle vertices
-        var bLeft = new Vertex(bottomLeft);
-        var tLeft = new Vertex(bottomLeft.x, topRight.y);
-        var bRight = new Vertex(topRight.x, bottomLeft.y);
-        var tRight = new Vertex(topRight);
-        Delauney.Add(bLeft, tLeft, bRight, tRight);
+        // Set up Border triangle 
+        float dx = topRight.x - bottomLeft.x;
+        float dy = topRight.y - bottomLeft.y;
+
+        var bLeft = new Vertex(dx * -30, dy * -30);
+        var bRight = new Vertex(dx * 30, dy * -30);
+        var top = new Vertex(0, dy * 30);
 
         bLeft.Boundary = true;
-        tLeft.Boundary = true;
         bRight.Boundary = true;
-        tRight.Boundary = true;
+        top.Boundary = true;
 
-        // Border rectangle triangles
-        var tr1 = new Triangle(bLeft, tLeft, bRight);
-        var tr2 = new Triangle(tLeft, bRight, tRight);
-        Delauney.Add(tr1, tr2);
+        var triangle = new Triangle(bLeft, top, bRight);
+        Delauney.Add(bLeft, bRight, top);
+        Delauney.Add(triangle);
     }
 
     private GameState(GameState original)
@@ -56,6 +51,10 @@ public class GameState
         this.TopRight = new Vector2(original.TopRight.x, original.TopRight.y);
         this.Delauney = original.Delauney.Copy();
         this.Voronoi = original.Voronoi.Copy();
+
+        foreach(Face face in this.Voronoi.Faces.Values) {
+            face.CalculateCutPolygon(BottomLeft, TopRight);
+        }
     }
 
 
@@ -83,7 +82,7 @@ public class GameState
             newTriangles.Add(triangle);
         }
 
-        AdjustVoronoi(vertex, badTriangles, newTriangles, playerOne); 
+        AdjustVoronoi(vertex, badTriangles, newTriangles, playerOne);
     }
 
     private HashSet<Triangle> FindBadTriangles(Vector2 point)
@@ -107,6 +106,7 @@ public class GameState
     private void AdjustVoronoi(Vertex vertex, HashSet<Triangle> badTriangles, HashSet<Triangle> newTriangles, bool playerOne)
     {
         newVoronoiEdges = new HashSet<Edge>();
+        var affectedVoronoiFaces = new HashSet<Face>();
         foreach(Triangle triangle in badTriangles) {
             Voronoi.Remove(triangle.Circumcenter);
         }
@@ -137,11 +137,16 @@ public class GameState
                         Voronoi.Faces.TryGetValue(p, out face);
                         edge.SetFace(face);
                         face.Add(edge);
+                        affectedVoronoiFaces.Add(face);
                     }
 
                     newVoronoiEdges.Add(edge);
                 }
             }
+        }
+
+        foreach(Face face in affectedVoronoiFaces) {
+            face.CalculateCutPolygon(BottomLeft, TopRight);
         }
     }
 
@@ -150,8 +155,16 @@ public class GameState
         return new GameState(this);
     }
 
-    public void DebugDraw(float y, bool delauney, bool delauneyDebug, bool voronoi, bool voronoiDebug)
+    public void DebugDraw(float y, bool borders, bool delauney, bool delauneyDebug, bool voronoi, bool voronoiDebug)
     {
+        if(borders) {
+            Debug.DrawLine(new Vector3(BottomLeft.x, y, BottomLeft.y), new Vector3(BottomLeft.x, y, TopRight.y), Color.white, 0);
+            Debug.DrawLine(new Vector3(BottomLeft.x, y, TopRight.y), new Vector3(TopRight.x, y, TopRight.y), Color.white, 0);
+            Debug.DrawLine(new Vector3(TopRight.x, y, TopRight.y), new Vector3(TopRight.x, y, BottomLeft.y), Color.white, 0);
+            Debug.DrawLine(new Vector3(TopRight.x, y, BottomLeft.y), new Vector3(BottomLeft.x, y, BottomLeft.y), Color.white, 0);
+        }
+
+
         if(delauney) {
             Delauney.DebugDraw(y);
         }
@@ -201,21 +214,35 @@ public class GameState
             // }
 
             // Draw incomplete Voronoi cells
+            //foreach(Face f in Voronoi.Faces.Values) {
+            //    if(f.IsComplete) continue;
+            //    if(f.Start == f.End) continue;
+
+            //    var middle = new Vector3(f.Point.X, y, f.Point.Y);
+            //    var start = f.GetAdjustedStart(f.Start);
+            //    var end = f.GetAdjustedEnd(f.End);
+
+            //    Debug.DrawLine(middle, new Vector3(start.X, y, start.Y), Color.magenta, 0);
+            //    Debug.DrawLine(middle, new Vector3(end.X, y, end.Y), Color.magenta, 0);
+            //}
+
+
             foreach(Face f in Voronoi.Faces.Values) {
-                if(f.IsComplete) continue;
-                if(f.Start == f.End) continue;
-                
-                var middle = new Vector3(f.Point.X, y, f.Point.Y);
-                var start = f.GetAdjustedStart(f.Start);
-                var end = f.GetAdjustedEnd(f.End);
-          
-                Debug.DrawLine(middle, new Vector3(start.X, y, start.Y), Color.magenta, 0);
-                Debug.DrawLine(middle, new Vector3(end.X, y, end.Y), Color.magenta, 0);
+                if(f.CutPolygon == null) continue;
+                if(f.CutPolygon.Count < 2) continue;
+
+                var prev = f.CutPolygon.Values.Last();
+                foreach(Vertex v in f.CutPolygon.Keys) {
+                    Debug.DrawLine(new Vector3(prev.X, y, prev.Y), new Vector3(v.X, y, v.Y), Color.magenta, 0);
+                    prev = v;
+                    Debug.DrawLine(new Vector3(f.Point.X, y, f.Point.Y), new Vector3(v.X, y, v.Y), Color.green, 0);
+                }
             }
         }
     }
 
-    public List<Vector2> GetPointOrder() {
+    public List<Vector2> GetPointOrder()
+    {
         return pointOrder;
     }
 }

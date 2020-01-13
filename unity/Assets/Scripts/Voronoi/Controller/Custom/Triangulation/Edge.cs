@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Edge
 {
@@ -48,6 +49,29 @@ public class Edge
             return start;
         } else {
             return null;
+        }
+    }
+
+    public Boolean TryFindIntersectionPoint(Vector2 otherStart, Vector2 otherEnd, out Vector2 intersection)
+    {
+        var denominator = (otherEnd.x - otherStart.x) * (start.Y - end.Y) - (start.X - end.X) * (otherEnd.y - otherStart.y) ;
+        if (denominator == 0) {
+            intersection = new Vector2();
+            return false;
+        } else {
+            var anum = (otherStart.y - otherEnd.y) * (start.X - otherStart.x) + (otherEnd.x - otherStart.x) * (start.Y - otherStart.y);
+            var bnum = (start.Y - end.Y) * (start.X - otherStart.x) + (end.X - start.X) * (start.Y - otherStart.y);
+            var a = anum / denominator;
+            var b = bnum / denominator;
+            if (a < 0 || a > 1 || b < 0 || b > 1) {
+                intersection = new Vector2();
+                return false;
+            }
+            var x = start.X + a * (end.X - start.X);
+            var y = start.Y + a * (end.Y - start.Y);
+
+            intersection = new Vector2(x, y);
+            return true;
         }
     }
 

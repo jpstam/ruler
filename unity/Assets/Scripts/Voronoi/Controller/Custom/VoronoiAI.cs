@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class VoronoiAI : MonoBehaviour
 {
+    public bool DrawBorders = false;
     public bool DrawDelauneyTriangulation = false;
     public bool DrawDelauneyDebug = false;
     public bool DrawVoronoiDiagram = false;
@@ -25,7 +26,7 @@ public class VoronoiAI : MonoBehaviour
     void FixedUpdate()
     {
         if (gs != null)
-            gs.DebugDraw(bottomLeft.y, DrawDelauneyTriangulation, DrawDelauneyDebug, DrawVoronoiDiagram, DrawVoronoiDebug);
+            gs.DebugDraw(bottomLeft.y, DrawBorders, DrawDelauneyTriangulation, DrawDelauneyDebug, DrawVoronoiDiagram, DrawVoronoiDebug);
     }
 
     public void SetCorners(Vector3 bottomLeft, Vector3 topRight)

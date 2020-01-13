@@ -95,9 +95,9 @@ public class Graph
             int p = face.OwnedByPlayer1 ? 0 : 1;
 
             // Add the area for this face to the total for the owning player
-            areas[p] += face.ComputeArea();
+            //areas[p] += face.ComputeArea();
 
-            Debug.Log("Owned by: " + face.OwnedByPlayer1);
+            Debug.Log("Owned by: " + (face.OwnedByPlayer1 ? "Blue" : "Red"));
 
         }
         Debug.Log("------------");
