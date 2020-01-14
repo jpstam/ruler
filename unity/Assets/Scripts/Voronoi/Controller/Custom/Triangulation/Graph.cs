@@ -108,6 +108,34 @@ public class Graph
         return areas;
     }
 
+    public float[] ComputeCircumferences()
+    {
+        float[] circumferences = new float[] { 0, 0 };
+
+        foreach (Vertex vertex in this.Faces.Keys) {
+            Face face;
+            bool exists = this.Faces.TryGetValue(vertex, out face);
+            if (!exists) {
+                continue;
+            }
+
+            int p = face.OwnedByPlayer1 ? 0 : 1;
+
+            // Add the circumferences for this face to the total for the owning player
+            float value = face.ComputeCircumference();
+            circumferences[p] += value;
+        }
+
+        // Normalize the circumferences such that they become percentages
+        float totalCircumference = circumferences[0] + circumferences[1];
+
+        circumferences[0] = circumferences[0] / Mathf.Max(totalCircumference, 1) * 100;
+        circumferences[1] = circumferences[1] / Mathf.Max(totalCircumference, 1) * 100;
+
+        // Return the circumferences for both players
+        return circumferences;
+    }
+
     public void DebugDraw(float y)
     {
         foreach(Edge e in Edges.Keys) {

@@ -198,6 +198,26 @@ public class Face
         return Mathf.Abs(area / 2f);
     }
 
+    public float ComputeCircumference()
+    {
+        float circumference = 0;
+
+        if (this.CutPolygon == null) {
+            return circumference;
+        }
+        if (this.CutPolygon.Count < 2) {
+            return circumference;
+        }
+
+        for (int i = 0; i < this.CutPolygon.Count; i++) {
+            Vertex v1 = this.CutPolygon.Keys[i];
+            Vertex v2 = this.CutPolygon.Keys[(i + 1) % this.CutPolygon.Count];
+            circumference += Mathf.Sqrt(Mathf.Pow(v1.X - v2.X, 2) + Mathf.Pow(v1.Y - v2.Y, 2));
+        }
+
+        return circumference;
+    }
+
     private bool IsPointOnEdge(Vertex vertex, Vector2 bottomLeft, Vector2 topRight)
     {
         return Mathf.Approximately(bottomLeft.x, vertex.X) 

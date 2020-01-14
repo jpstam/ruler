@@ -40,6 +40,7 @@ public class VoronoiAI : MonoBehaviour
         sf = new AreaScore();
         // sf = new DistanceScore();
         // sf = new StandardDeviationScore();
+        // sf = new CircumferenceScore();
     }
 
     public Vector2 GetMove()
