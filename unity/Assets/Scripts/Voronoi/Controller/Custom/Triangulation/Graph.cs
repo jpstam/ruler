@@ -84,7 +84,6 @@ public class Graph
     {
         float[] areas = new float[] { 0, 0 };
 
-        Debug.Log("------------");
         foreach (Vertex vertex in this.Faces.Keys) {
             Face face;
             bool exists = this.Faces.TryGetValue(vertex, out face);
@@ -95,12 +94,9 @@ public class Graph
             int p = face.OwnedByPlayer1 ? 0 : 1;
 
             // Add the area for this face to the total for the owning player
-            areas[p] += face.ComputeArea();
-
-            Debug.Log("Owned by: " + (face.OwnedByPlayer1 ? "Blue" : "Red"));
-
+            float value = face.ComputeArea();
+            areas[p] += value;
         }
-        Debug.Log("------------");
 
         // Normalize the area such that they become percentages
         float totalArea = areas[0] + areas[1];

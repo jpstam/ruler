@@ -8,6 +8,6 @@ public class AreaScore : ScoreFunction {
         Debug.Log("Area score: " + areas[0] + " - " + areas[1]);
         // Return the area for the red player
         // TODO: allow computing the score for both players
-        return areas[1];
+        return areas[0];
     }
 }
