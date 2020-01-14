@@ -11,7 +11,7 @@ public class RandomStrategy : Strategy {
         this.samples = samples;
     }
 
-    public override List<Vector2> ComputeOptions(GameState gs) {
+    public override List<Vector2> ComputeOptions(GameState gs, bool player1Move) {
         List<Vector2> options = new List<Vector2>();
 
         for (int x = 0; x < samples; x++) {

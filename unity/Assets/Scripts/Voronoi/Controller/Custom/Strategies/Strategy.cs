@@ -4,5 +4,5 @@ using UnityEngine;
 
 public abstract class Strategy
 {
-    public abstract List<Vector2> ComputeOptions(GameState gs);
+    public abstract List<Vector2> ComputeOptions(GameState gs, bool player1Move);
 }

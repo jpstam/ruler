@@ -28,7 +28,7 @@ public static class MiniMax
 
     public static Vector2 GetBestMove(GameState gs, StrategyHandler sh, ScoreFunction sf) {
         // First let the strategy handler determine all possible move options for this round
-        List<Vector2> options = sh.ComputeOptions(gs);
+        List<Vector2> options = sh.ComputeOptions(gs, false);
 
         // Convert the options to scored moves
         List<ScoredMove> scoredMoves = options.ConvertAll(o => new ScoredMove(o));
@@ -77,7 +77,7 @@ public static class MiniMax
             return sf.ComputeScore(nextMove, gsTemp);
         }
 
-        List<Vector2> options = sh.ComputeOptions(gsTemp);
+        List<Vector2> options = sh.ComputeOptions(gsTemp, maximizingPlayer);
 
         if (maximizingPlayer) {
             float max = float.MinValue;
