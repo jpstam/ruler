@@ -48,13 +48,14 @@ public class Face
 
     public void Add(Edge edge)
     {
-        var adjusted = GetAdjustedStart(edge);
-        if(adjusted != null && !Edges.ContainsKey(adjusted)) {
-            Edges.Add(GetAdjustedStart(edge), edge);
+        if (edge != null) {
             edge.SetFace(this);
-            FindHole();
-        } else {
-            //Debug.Log(Point.ToString() + " : " + edge.ToString());
+            var adjusted = GetAdjustedStart(edge);
+            if(adjusted != null && !Edges.ContainsKey(adjusted)) {
+                Edges.Add(GetAdjustedStart(edge), edge);
+            
+                FindHole();
+            }
         }
     }
 
@@ -65,6 +66,9 @@ public class Face
 
     public Vertex GetAdjustedStart(Edge edge)
     {
+        if(edge == null) {
+            return null;
+        }
         if(edge.right == this) {
             return edge.start;
         } else if(edge.left == this) {
@@ -76,6 +80,9 @@ public class Face
 
     public Vertex GetAdjustedEnd(Edge edge)
     {
+        if(edge == null) {
+            return null;
+        }
         if(edge.right == this) {
             return edge.end;
         } else if(edge.left == this) {
@@ -83,6 +90,36 @@ public class Face
         } else {
             return null;
         }
+    }
+
+    public bool ContainsPoint(Vector2 p)
+    {
+        if (Edges.Count < 1) return false;
+
+        //Not used Source: https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
+        
+        //var c = false;
+        foreach (Edge e in Edges.Values) {
+            var start = GetAdjustedStart(e);
+            var end = GetAdjustedEnd(e);
+            //if(((end.Y > p.y) != (start.Y > p.y)) &&
+            //    (p.x < (start.X - end.X) * (p.y - end.Y) / (start.Y - end.Y) + end.X))
+            //    c = !c;
+            var d = (end.X - start.X) * (p.y - start.Y) - (end.Y - start.Y) * (p.x - start.X);
+            if (d > 0) {
+                return false;
+            }
+        }
+
+        //if (!IsComplete) {
+        //    var start = GetAdjustedEnd(End);
+        //    var end = GetAdjustedStart(Start);
+        //    if(((end.Y > p.y) != (start.Y > p.y)) &&
+        //        (p.x < (start.X - end.X) * (p.y - end.Y) / (start.Y - end.Y) + end.X))
+        //        c = !c;
+        //}
+        
+        return true;
     }
 
     public void CalculateCutPolygon(Vector2 bottomLeft, Vector2 topRight)
@@ -140,28 +177,30 @@ public class Face
                     var top = Mathf.Approximately(topRight.y, prev.Y) || Mathf.Approximately(topRight.y, vertex.Y);
                     var bottom = Mathf.Approximately(bottomLeft.y, prev.Y) || Mathf.Approximately(bottomLeft.y, vertex.Y);
                     if(left && right) {
-                        // TODO: Expensive way of doing it
-                        // If topleft in OG polygon then add topleft and topright
-                        // Elif bottomleft in OG polygon then add bottomleft and bottomright
-                        // Other Option: Check if there is a face to the left.
 
-                        //var third = PartialCutPolygon.Values.First(o => o != vertex && o != prev);
-                        //var y = (third.Y > prev.Y || third.Y > vertex.Y) ? bottomLeft.y : topRight.y;
-                        //var extra = new Vertex(new Vector2(bottomLeft.x, y));
-                        //CutPolygon.Add(extra, extra);
-                        //var extra2 = new Vertex(new Vector2(topRight.x, y));
-                        //CutPolygon.Add(extra2, extra2);
+                        if (this.ContainsPoint(topRight)) {
+                            var eTopLeft = new Vertex(new Vector2(bottomLeft.x, topRight.y));
+                            CutPolygon.Add(eTopLeft, eTopLeft);
+                            var eTopRight = new Vertex(new Vector2(topRight.x, topRight.y));
+                            CutPolygon.Add(eTopRight, eTopRight);
+                        } else if (this.ContainsPoint(bottomLeft)) {
+                            var eBottomLeft = new Vertex(new Vector2(bottomLeft.x, bottomLeft.y));
+                            CutPolygon.Add(eBottomLeft, eBottomLeft);
+                            var eBottomRight = new Vertex(new Vector2(topRight.x, bottomLeft.y));
+                            CutPolygon.Add(eBottomRight, eBottomRight);
+                        }
                     } else if(top && bottom) {
-                        // TODO: Expensive way of doing it
-                        // If topleft in OG polygon then add topleft and bottomleft
-                        // Elif topright in OG polygon then add topright and bottomright
-
-                        //var third = PartialCutPolygon.Values.First(o => o != vertex && o != prev);
-                        //var x = (third.X > prev.X || third.X > vertex.X) ? bottomLeft.x : topRight.x;
-                        //var extra = new Vertex(new Vector2(x, topRight.y));
-                        //CutPolygon.Add(extra, extra);
-                        //var extra2 = new Vertex(new Vector2(x, bottomLeft.y));
-                        //CutPolygon.Add(extra2, extra2);
+                        if (this.ContainsPoint(bottomLeft)) {
+                            var eTopLeft = new Vertex(new Vector2(bottomLeft.x, topRight.y));
+                            CutPolygon.Add(eTopLeft, eTopLeft);
+                            var eBottomLeft = new Vertex(new Vector2(bottomLeft.x, bottomLeft.y));
+                            CutPolygon.Add(eBottomLeft, eBottomLeft);
+                        } else if(this.ContainsPoint(topRight)) {
+                            var eTopRight = new Vertex(new Vector2(topRight.x, topRight.y));
+                            CutPolygon.Add(eTopRight, eTopRight);
+                            var eBottomRight = new Vertex(new Vector2(topRight.x, bottomLeft.y));
+                            CutPolygon.Add(eBottomRight, eBottomRight);
+                        }
                     } else {
                         var x = left ? bottomLeft.x : topRight.x;
                         var y = bottom ? bottomLeft.y : topRight.y;

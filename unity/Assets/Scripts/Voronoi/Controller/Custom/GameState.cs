@@ -135,7 +135,6 @@ public class GameState
                     foreach(Vertex p in points) {
                         Face face;
                         Voronoi.Faces.TryGetValue(p, out face);
-                        edge.SetFace(face);
                         face.Add(edge);
                         affectedVoronoiFaces.Add(face);
                     }
@@ -213,7 +212,7 @@ public class GameState
             //     Debug.DrawLine(new Vector3(t.p2.X, y, t.p2.Y), new Vector3(t.Circumcenter.x, y, t.Circumcenter.y), Color.magenta, 0);
             // }
 
-            // Draw incomplete Voronoi cells
+            //Draw incomplete Voronoi cells
             //foreach(Face f in Voronoi.Faces.Values) {
             //    if(f.IsComplete) continue;
             //    if(f.Start == f.End) continue;
@@ -236,6 +235,15 @@ public class GameState
                     Debug.DrawLine(new Vector3(prev.X, y, prev.Y), new Vector3(v.X, y, v.Y), Color.magenta, 0);
                     prev = v;
                     Debug.DrawLine(new Vector3(f.Point.X, y, f.Point.Y), new Vector3(v.X, y, v.Y), Color.green, 0);
+                }
+            }
+
+            foreach(Face f in Voronoi.Faces.Values) {
+                if (f.ContainsPoint(TopRight)) {
+                    Debug.DrawLine(new Vector3(f.Point.X, y, f.Point.Y), new Vector3(TopRight.x, y, TopRight.y), Color.red, 0);
+                }
+                if(f.ContainsPoint(BottomLeft)) {
+                    Debug.DrawLine(new Vector3(f.Point.X, y, f.Point.Y), new Vector3(BottomLeft.x, y, BottomLeft.y), Color.red, 0);
                 }
             }
         }
