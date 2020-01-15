@@ -48,12 +48,12 @@ public class Face
 
     public void Add(Edge edge)
     {
-        if (edge != null) {
+        if(edge != null) {
             edge.SetFace(this);
             var adjusted = GetAdjustedStart(edge);
             if(adjusted != null && !Edges.ContainsKey(adjusted)) {
                 Edges.Add(GetAdjustedStart(edge), edge);
-            
+
                 FindHole();
             }
         }
@@ -94,19 +94,19 @@ public class Face
 
     public bool ContainsPoint(Vector2 p)
     {
-        if (Edges.Count < 1) return false;
+        if(Edges.Count < 1) return false;
 
         //Not used Source: https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
-        
+
         //var c = false;
-        foreach (Edge e in Edges.Values) {
+        foreach(Edge e in Edges.Values) {
             var start = GetAdjustedStart(e);
             var end = GetAdjustedEnd(e);
             //if(((end.Y > p.y) != (start.Y > p.y)) &&
             //    (p.x < (start.X - end.X) * (p.y - end.Y) / (start.Y - end.Y) + end.X))
             //    c = !c;
             var d = (end.X - start.X) * (p.y - start.Y) - (end.Y - start.Y) * (p.x - start.X);
-            if (d > 0) {
+            if(d > 0) {
                 return false;
             }
         }
@@ -118,7 +118,7 @@ public class Face
         //        (p.x < (start.X - end.X) * (p.y - end.Y) / (start.Y - end.Y) + end.X))
         //        c = !c;
         //}
-        
+
         return true;
     }
 
@@ -167,30 +167,33 @@ public class Face
             foreach(Vertex vertex in PartialCutPolygon.Values) {
                 CutPolygon.Add(vertex, vertex);
 
-                if(IsPointOnEdge(prev, bottomLeft, topRight) 
-                    && IsPointOnEdge(vertex, bottomLeft, topRight) 
-                    && !(Mathf.Approximately(prev.X, vertex.X) || Mathf.Approximately(prev.Y, vertex.Y))) {
+                if(IsPointOnEdge(prev, bottomLeft, topRight)
+                    && IsPointOnEdge(vertex, bottomLeft, topRight)) {
 
-                    // Intersections are with different edges, so we need to add the corner(s) inbetween them
+                    // Intersections could be with different edges
                     var left = Mathf.Approximately(bottomLeft.x, prev.X) || Mathf.Approximately(bottomLeft.x, vertex.X);
                     var right = Mathf.Approximately(topRight.x, prev.X) || Mathf.Approximately(topRight.x, vertex.X);
                     var top = Mathf.Approximately(topRight.y, prev.Y) || Mathf.Approximately(topRight.y, vertex.Y);
                     var bottom = Mathf.Approximately(bottomLeft.y, prev.Y) || Mathf.Approximately(bottomLeft.y, vertex.Y);
-                    if(left && right) {
-
-                        if (this.ContainsPoint(topRight)) {
+                     if((left || right) && (bottom || top)) {
+                        var x = left ? bottomLeft.x : topRight.x;
+                        var y = bottom ? bottomLeft.y : topRight.y;
+                        var extra = new Vertex(new Vector2(x, y));
+                        CutPolygon.Add(extra, extra);
+                    } else if(left && right) {
+                        if(this.ContainsPoint(topRight)) {
                             var eTopLeft = new Vertex(new Vector2(bottomLeft.x, topRight.y));
                             CutPolygon.Add(eTopLeft, eTopLeft);
                             var eTopRight = new Vertex(new Vector2(topRight.x, topRight.y));
                             CutPolygon.Add(eTopRight, eTopRight);
-                        } else if (this.ContainsPoint(bottomLeft)) {
+                        } else if(this.ContainsPoint(bottomLeft)) {
                             var eBottomLeft = new Vertex(new Vector2(bottomLeft.x, bottomLeft.y));
                             CutPolygon.Add(eBottomLeft, eBottomLeft);
                             var eBottomRight = new Vertex(new Vector2(topRight.x, bottomLeft.y));
                             CutPolygon.Add(eBottomRight, eBottomRight);
                         }
                     } else if(top && bottom) {
-                        if (this.ContainsPoint(bottomLeft)) {
+                        if(this.ContainsPoint(bottomLeft)) {
                             var eTopLeft = new Vertex(new Vector2(bottomLeft.x, topRight.y));
                             CutPolygon.Add(eTopLeft, eTopLeft);
                             var eBottomLeft = new Vertex(new Vector2(bottomLeft.x, bottomLeft.y));
@@ -201,11 +204,6 @@ public class Face
                             var eBottomRight = new Vertex(new Vector2(topRight.x, bottomLeft.y));
                             CutPolygon.Add(eBottomRight, eBottomRight);
                         }
-                    } else {
-                        var x = left ? bottomLeft.x : topRight.x;
-                        var y = bottom ? bottomLeft.y : topRight.y;
-                        var extra = new Vertex(new Vector2(x, y));
-                        CutPolygon.Add(extra, extra);
                     }
                 }
                 prev = vertex;
@@ -221,14 +219,14 @@ public class Face
     {
         float area = 0;
 
-        if (this.CutPolygon == null) {
+        if(this.CutPolygon == null) {
             return area;
         }
-        if (this.CutPolygon.Count < 2) {
+        if(this.CutPolygon.Count < 2) {
             return area;
         }
 
-        for (int i = 0; i < this.CutPolygon.Count; i++) {
+        for(int i = 0; i < this.CutPolygon.Count; i++) {
             Vertex v1 = this.CutPolygon.Keys[i];
             Vertex v2 = this.CutPolygon.Keys[(i + 1) % this.CutPolygon.Count];
             area += v1.X * v2.Y - v1.Y * v2.X;
@@ -241,14 +239,14 @@ public class Face
     {
         float circumference = 0;
 
-        if (this.CutPolygon == null) {
+        if(this.CutPolygon == null) {
             return circumference;
         }
-        if (this.CutPolygon.Count < 2) {
+        if(this.CutPolygon.Count < 2) {
             return circumference;
         }
 
-        for (int i = 0; i < this.CutPolygon.Count; i++) {
+        for(int i = 0; i < this.CutPolygon.Count; i++) {
             Vertex v1 = this.CutPolygon.Keys[i];
             Vertex v2 = this.CutPolygon.Keys[(i + 1) % this.CutPolygon.Count];
             circumference += Mathf.Sqrt(Mathf.Pow(v1.X - v2.X, 2) + Mathf.Pow(v1.Y - v2.Y, 2));
@@ -259,9 +257,9 @@ public class Face
 
     private bool IsPointOnEdge(Vertex vertex, Vector2 bottomLeft, Vector2 topRight)
     {
-        return Mathf.Approximately(bottomLeft.x, vertex.X) 
-            || Mathf.Approximately(topRight.x, vertex.X) 
-            || Mathf.Approximately(topRight.y, vertex.Y) 
+        return Mathf.Approximately(bottomLeft.x, vertex.X)
+            || Mathf.Approximately(topRight.x, vertex.X)
+            || Mathf.Approximately(topRight.y, vertex.Y)
             || Mathf.Approximately(bottomLeft.y, vertex.Y);
     }
 
