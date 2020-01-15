@@ -67,7 +67,7 @@ public static class MiniMax
 
         GameState gsTemp = new GameState(gs.BottomLeft, gs.TopRight);
         bool tempPlayer1 = true;
-        foreach(Vector2 point in gs.GetPointOrder()) {
+        foreach(Vector2 point in gs.GetPoints()) {
             gsTemp.AddPoint(point, tempPlayer1);
             tempPlayer1 = !tempPlayer1;
         }

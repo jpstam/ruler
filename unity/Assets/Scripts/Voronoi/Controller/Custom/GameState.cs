@@ -253,7 +253,6 @@ public class GameState
         if (hull)
         {
             List<Vector2> cHull = CustomConvexHull.QuickHull(Points);
-            Debug.LogFormat("number of pts: {0}, number of pts in hull: {1}", Points.Count, cHull.Count);
             if (cHull.Count > 0)
             {
                 Vector2 prev = cHull.Last();
@@ -266,7 +265,7 @@ public class GameState
         }
     }
 
-    public List<Vector2> GetPointOrder()
+    public List<Vector2> GetPoints()
     {
         return Points;
     }

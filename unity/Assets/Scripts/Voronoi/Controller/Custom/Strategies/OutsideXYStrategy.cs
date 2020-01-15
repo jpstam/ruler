@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OutsideStrategy : Strategy
+public class OutsideXYStrategy : Strategy
 {
 
     protected float distance;
 
-    public OutsideStrategy(float distance) : base()
+    public OutsideXYStrategy(float distance) : base()
     {
         this.distance = distance;
     }
