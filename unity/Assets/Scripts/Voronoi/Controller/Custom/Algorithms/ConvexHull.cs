@@ -6,45 +6,48 @@ using Util.Geometry;
 
 namespace Voronoi.Custom.Algorithms
 {
-    public static class ConvexHull
+    public static class CustomConvexHull
     {
-        public static List<Vertex> QuickHull(List<Vertex> points)
+        public static List<Vector2> QuickHull(List<Vector2> points)
         {
-            List<Vertex> hull = new List<Vertex>();
+            List<Vector2> pts = new List<Vector2>(points);
+            List<Vector2> hull = new List<Vector2>();
+
+            if (pts.Count == 0)
+            {
+                return hull;
+            }
 
             //Find leftmost and rightmost point
-            Vertex left = points.First();
-            Vertex right = points.First();
-            foreach (Vertex p in points)
+            Vector2 left = pts.First();
+            Vector2 right = pts.First();
+            foreach (Vector2 p in pts)
             {
-                if (p.X < left.X)
+                if (p.x < left.x)
                 {
                     left = p;
                 }
 
-                if (p.X > right.X)
+                if (p.x > right.x)
                 {
                     right = p;
                 }
             }
-            //Add to hull
-            hull.Add(left);
-            hull.Add(right);
 
             //line from leftmost to rightmost point
-            Line lr = new Line(left.point, right.point);
-            Line rl = new Line(right.point, left.point);
+            Line lr = new Line(left, right);
+            Line rl = new Line(right, left);
 
             //Remove points from remaining point list
-            points.Remove(left);
-            points.Remove(right);
+            pts.Remove(left);
+            pts.Remove(right);
 
             //Get sets of vertices left and right of l
-            List<Vertex> leftVertices = new List<Vertex>();
-            List<Vertex> rightVertices = new List<Vertex>();
-            foreach (Vertex p in points)
+            List<Vector2> leftVertices = new List<Vector2>();
+            List<Vector2> rightVertices = new List<Vector2>();
+            foreach (Vector2 p in pts)
             {
-                if (lr.PointRightOfLine(p.point))
+                if (lr.PointRightOfLine(p))
                 {
                     rightVertices.Add(p);
                 }
@@ -54,65 +57,79 @@ namespace Voronoi.Custom.Algorithms
                 }
             }
 
-            // find hull
-            hull.AddRange(FindHull(leftVertices, rl));
+            // construct hull
+
+            //Left point
+            hull.Add(left);
+
+            //Points between left and right
             hull.AddRange(FindHull(rightVertices, lr));
 
+            //Right point
+            hull.Add(right);
+
+            //Points between right and left
+            hull.AddRange(FindHull(leftVertices, rl));
+            
             // return hull
             return hull;
         }
 
-        private static List<Vertex> FindHull(List<Vertex> points, Line line)
+        private static List<Vector2> FindHull(List<Vector2> points, Line line)
         {
-            List<Vertex> pts = new List<Vertex>();
-            if (points.Count == 0)
+            List<Vector2> pts = new List<Vector2>(points);
+            List<Vector2> hullPts = new List<Vector2>();
+
+            if (pts.Count == 0)
             {
-                return pts;
+                return hullPts;
             }
             
             //Find point with greatest distance
-            Vertex dist = points.First();
-            foreach (Vertex p in points)
+            Vector2 dist = pts.First();
+            foreach (Vector2 p in pts)
             {
-                if (line.DistanceToPoint(dist.point) < line.DistanceToPoint(p.point))
+                if (line.DistanceToPoint(dist) < line.DistanceToPoint(p))
                 {
                     dist = p;
                 }
             }
 
-            //Add most distant point to hull
-            pts.Add(dist);
-
             //Remove most distant point from remaining points
-            points.Remove(dist);
+            pts.Remove(dist);
 
             //New lines of convex hull
-            Line l1 = new Line(line.Point1, dist.point);
-            Line l2 = new Line(dist.point, line.Point2);
+            Line l1 = new Line(line.Point1, dist);
+            Line l2 = new Line(dist, line.Point2);
 
-            List<Vertex> p1 = new List<Vertex>();
-            List<Vertex> p2 = new List<Vertex>();
+            List<Vector2> p1 = new List<Vector2>();
+            List<Vector2> p2 = new List<Vector2>();
 
             //Find points right of l1 and l2
-            foreach (Vertex p in points)
+            foreach (Vector2 p in pts)
             {
-                if (l1.PointRightOfLine(p.point))
+                if (l1.PointRightOfLine(p))
                 {
                     p1.Add(p);
                 }
 
-                if (l2.PointRightOfLine(p.point))
+                if (l2.PointRightOfLine(p))
                 {
                     p2.Add(p);
                 }
             }
 
-            //Recursion, get extra points outside hull, that are on the hull
-            pts.AddRange(FindHull(p1, l1));
-            pts.AddRange(FindHull(p2, l2));
+            //Construct hull
+
+            //Points between A and most distant point
+            hullPts.AddRange(FindHull(p1, l1));
+            //Add most distant point to hull
+            hullPts.Add(dist);
+            //Points between most distant point and B
+            hullPts.AddRange(FindHull(p2, l2));
 
             //Return extra points on hull
-            return pts;
+            return hullPts;
         }
     }
 }

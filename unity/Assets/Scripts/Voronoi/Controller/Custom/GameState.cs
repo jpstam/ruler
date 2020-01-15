@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Voronoi.Custom.Algorithms;
 
 
 public class GameState
 {
-    // TEMP: keep track of the order of points added (for copy of gamestate)
-    private List<Vector2> pointOrder = new List<Vector2>();
+    // Castles in the game
+    private List<Vector2> Points = new List<Vector2>();
 
 
     public Vector2 BottomLeft { get; private set; }
@@ -51,6 +52,7 @@ public class GameState
         this.TopRight = new Vector2(original.TopRight.x, original.TopRight.y);
         this.Delauney = original.Delauney.Copy();
         this.Voronoi = original.Voronoi.Copy();
+        this.Points = original.Points;
 
         foreach(Face face in this.Voronoi.Faces.Values) {
             face.CalculateCutPolygon(BottomLeft, TopRight);
@@ -60,8 +62,8 @@ public class GameState
 
     public void AddPoint(Vector2 point, bool playerOne)
     {
-        // TEMP: Add points to the point order (for copy of gamestate)
-        pointOrder.Add(new Vector2(point.x, point.y));
+        // Add castle
+        Points.Add(new Vector2(point.x, point.y));
 
 
         var badTriangles = FindBadTriangles(point);
@@ -154,7 +156,7 @@ public class GameState
         return new GameState(this);
     }
 
-    public void DebugDraw(float y, bool borders, bool delauney, bool delauneyDebug, bool voronoi, bool voronoiDebug)
+    public void DebugDraw(float y, bool borders, bool delauney, bool delauneyDebug, bool voronoi, bool voronoiDebug, bool hull)
     {
         if(borders) {
             Debug.DrawLine(new Vector3(BottomLeft.x, y, BottomLeft.y), new Vector3(BottomLeft.x, y, TopRight.y), Color.white, 0);
@@ -247,10 +249,25 @@ public class GameState
                 }
             }
         }
+
+        if (hull)
+        {
+            List<Vector2> cHull = CustomConvexHull.QuickHull(Points);
+            Debug.LogFormat("number of pts: {0}, number of pts in hull: {1}", Points.Count, cHull.Count);
+            if (cHull.Count > 0)
+            {
+                Vector2 prev = cHull.Last();
+                foreach (Vector2 cur in cHull)
+                {
+                    Debug.DrawLine(new Vector3(prev.x, y, prev.y), new Vector3(cur.x, y, cur.y), Color.yellow, 0);
+                    prev = cur;
+                }
+            }
+        }
     }
 
     public List<Vector2> GetPointOrder()
     {
-        return pointOrder;
+        return Points;
     }
 }

@@ -9,6 +9,7 @@ public class VoronoiAI : MonoBehaviour
     public bool DrawDelauneyDebug = false;
     public bool DrawVoronoiDiagram = false;
     public bool DrawVoronoiDebug = false;
+    public bool DrawConvexHull = false;
 
     private Vector3 bottomLeft;
     private Vector3 topRight;
@@ -26,7 +27,7 @@ public class VoronoiAI : MonoBehaviour
     void FixedUpdate()
     {
         if (gs != null)
-            gs.DebugDraw(bottomLeft.y, DrawBorders, DrawDelauneyTriangulation, DrawDelauneyDebug, DrawVoronoiDiagram, DrawVoronoiDebug);
+            gs.DebugDraw(bottomLeft.y, DrawBorders, DrawDelauneyTriangulation, DrawDelauneyDebug, DrawVoronoiDiagram, DrawVoronoiDebug, DrawConvexHull);
     }
 
     public void SetCorners(Vector3 bottomLeft, Vector3 topRight)
