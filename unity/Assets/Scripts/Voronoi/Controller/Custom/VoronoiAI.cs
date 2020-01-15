@@ -35,6 +35,7 @@ public class VoronoiAI : MonoBehaviour
         this.topRight = topRight;
         gs = new GameState(new Vector2(bottomLeft.x, bottomLeft.z), new Vector2(topRight.x, topRight.z));
         sh = new StrategyHandler()
+            .Add(new OutsideStrategy(1f))
             .Add(new GridStrategy(7, 5))
             .Add(new RandomStrategy(4))
             .Add(new LargestCellStrategy());
