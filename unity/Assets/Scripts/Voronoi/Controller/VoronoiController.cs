@@ -24,6 +24,7 @@
 
         // controller parameters
         public bool m_withLookAtOnPlacement = true;
+        public bool useFirstPlayerAi = false;
         public bool useSecondPlayerAi = true;
         public int m_turns;
 
@@ -33,7 +34,8 @@
 
         public VoronoiGUIManager m_GUIManager;
         public MeshFilter m_meshFilter;
-        public VoronoiAI m_voronoiAI;
+        public VoronoiAI m_voronoiAI1;
+        public VoronoiAI m_voronoiAI2;
 
         // variables defining state of turns
         private int m_halfTurnsTaken = 0;
@@ -84,7 +86,11 @@
                     new Vector2(topRight.x, bottomLeft.z)
                 });
 
-            m_voronoiAI.SetCorners(bottomLeft, topRight);
+            m_voronoiAI1 = new VoronoiAI(true);
+            m_voronoiAI2 = new VoronoiAI(false);
+
+            m_voronoiAI1.SetCorners(bottomLeft, topRight);
+            m_voronoiAI2.SetCorners(bottomLeft, topRight);
 
             VoronoiDrawer.CreateLineMaterial();
         }
@@ -244,14 +250,27 @@
                 }
             } else {
                 var me = new Vector2();
-                if(player1Turn || !useSecondPlayerAi) {
-                    // obtain mouse position vector
-                    var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    pos.y = 0;
-                    me = new Vector2(pos.x, pos.z);
+                if(player1Turn) {
+                    if (useFirstPlayerAi) {
+                        // Let the AI generate a point
+                        me = m_voronoiAI1.GetMove();
+                    } else {
+                        // obtain mouse position vector
+                        var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                        pos.y = 0;
+                        me = new Vector2(pos.x, pos.z);
+                    }
+                    
                 } else {
-                    // Let the AI generate a point
-                    me = m_voronoiAI.GetMove();
+                    if(useSecondPlayerAi) {
+                        // Let the AI generate a point
+                        me = m_voronoiAI2.GetMove();
+                    } else {
+                        // obtain mouse position vector
+                        var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                        pos.y = 0;
+                        me = new Vector2(pos.x, pos.z);
+                    }
                 }
 
                 // check if vertex already in graph to avoid degenerate cases
@@ -260,11 +279,13 @@
                 }
 
                 // Store the vertex in the data structure of the AI
-                m_voronoiAI.AddMove(me, player1Turn);
+                m_voronoiAI1.AddMove(me, player1Turn);
+                m_voronoiAI2.AddMove(me, player1Turn);
 
                 // Log the area computed by the voronoi AI
-                float[] areas = m_voronoiAI.gs.Voronoi.ComputeArea();
+                float[] areas = m_voronoiAI2.gs.Voronoi.ComputeArea();
                 Debug.Log("Area: " + areas[0] + " - " + areas[1]);
+
                 // store owner of vertex
                 m_ownership.Add(me, player1Turn ? EOwnership.PLAYER1 : EOwnership.PLAYER2);
 
