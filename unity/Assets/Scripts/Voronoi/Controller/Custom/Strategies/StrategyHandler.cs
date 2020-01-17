@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class StrategyHandler
@@ -17,6 +18,11 @@ public class StrategyHandler
         foreach (Strategy strategy in strategies) {
             options.AddRange(strategy.ComputeOptions(gs, player1Move));
         }
+
+        // Filter out any option which is outside the gamestate playing field
+        Vector2 bl = gs.BottomLeft;
+        Vector2 tr = gs.TopRight;
+        options = options.Where(o => bl.x <= o.x && o.x <= tr.x && bl.y <= o.y && o.y <= tr.y).ToList();
 
         return options;
     }
