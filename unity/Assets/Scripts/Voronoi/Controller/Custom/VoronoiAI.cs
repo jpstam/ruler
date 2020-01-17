@@ -55,6 +55,11 @@ public class VoronoiAI : MonoBehaviour
         // sf = new CircumferenceScore();
     }
 
+    public void SetPlayer1(bool player1)
+    {
+        this.player1 = player1;
+    }
+
     public Vector2 GetMove()
     {
         // Clear out any debug spheres used for visualizing the options

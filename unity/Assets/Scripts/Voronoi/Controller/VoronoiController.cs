@@ -86,8 +86,17 @@
                     new Vector2(topRight.x, bottomLeft.z)
                 });
 
-            m_voronoiAI1 = new VoronoiAI(true);
-            m_voronoiAI2 = new VoronoiAI(false);
+            GameObject goVoronoiAI1 = new GameObject();
+            GameObject goVoronoiAI2 = new GameObject();
+
+            m_voronoiAI1 = goVoronoiAI1.AddComponent<VoronoiAI>();
+            m_voronoiAI1.SetPlayer1(true);
+            m_voronoiAI2 = goVoronoiAI2.AddComponent<VoronoiAI>();
+            m_voronoiAI2.SetPlayer1(false);
+
+            m_voronoiAI1.DrawBorders = true;
+            m_voronoiAI1.DrawVoronoiDiagram = true;
+            m_voronoiAI1.DrawVoronoiDebug = true;
 
             m_voronoiAI1.SetCorners(bottomLeft, topRight);
             m_voronoiAI2.SetCorners(bottomLeft, topRight);
