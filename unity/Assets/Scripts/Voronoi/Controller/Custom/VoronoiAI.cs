@@ -41,23 +41,21 @@ public class VoronoiAI : MonoBehaviour
         this.bottomLeft = bottomLeft;
         this.topRight = topRight;
         gs = new GameState(new Vector2(bottomLeft.x, bottomLeft.z), new Vector2(topRight.x, topRight.z));
-        sh = new StrategyHandler()
-            .Add(new OutsideCHStrategy(1f))
-            .Add(new OutsideXYStrategy(1))
-            .Add(new GridStrategy(6, 4))
-            //.Add(new RandomStrategy(4))
-            .Add(new LargestCellStrategy());
-
-        // Select a score function used by the AI
-        sf = new AreaScore();
-        // sf = new DistanceScore();
-        // sf = new StandardDeviationScore();
-        // sf = new CircumferenceScore();
     }
 
     public void SetPlayer1(bool player1)
     {
         this.player1 = player1;
+    }
+
+    public void SetStrategyHandler(StrategyHandler sh)
+    {
+        this.sh = sh;
+    }
+
+    public void SetScoreFunction(ScoreFunction sf)
+    {
+        this.sf = sf;
     }
 
     public Vector2 GetMove()

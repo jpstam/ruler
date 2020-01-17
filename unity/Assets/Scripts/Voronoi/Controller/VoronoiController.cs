@@ -101,6 +101,32 @@
             m_voronoiAI1.SetCorners(bottomLeft, topRight);
             m_voronoiAI2.SetCorners(bottomLeft, topRight);
 
+
+            StrategyHandler sh1 = new StrategyHandler()
+                .Add(new OutsideCHStrategy(1f))
+                .Add(new OutsideXYStrategy(1))
+                .Add(new GridStrategy(6, 4))
+                //.Add(new RandomStrategy(4))
+                .Add(new LargestCellStrategy());
+
+            StrategyHandler sh2 = new StrategyHandler()
+                .Add(new OutsideCHStrategy(1f))
+                .Add(new OutsideXYStrategy(1))
+                .Add(new GridStrategy(6, 4))
+                //.Add(new RandomStrategy(4))
+                .Add(new LargestCellStrategy());
+
+            m_voronoiAI1.SetStrategyHandler(sh1);
+            m_voronoiAI2.SetStrategyHandler(sh2);
+
+            // Select a score function used by the AI
+            // new AreaScore();
+            // new DistanceScore();
+            // new StandardDeviationScore();
+            // new CircumferenceScore();
+            m_voronoiAI1.SetScoreFunction(new AreaScore());
+            m_voronoiAI2.SetScoreFunction(new AreaScore());
+
             VoronoiDrawer.CreateLineMaterial();
         }
 
