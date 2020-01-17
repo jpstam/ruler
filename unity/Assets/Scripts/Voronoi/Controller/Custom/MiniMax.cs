@@ -34,7 +34,7 @@ public static class MiniMax
         List<ScoredMove> scoredMoves = options.ConvertAll(o => new ScoredMove(o));
 
         foreach (ScoredMove scoredMove in scoredMoves) {
-            float value = DoMiniMax(scoredMove.Move, scoredMove, 0, true, gs, sh, sf);
+            float value = DoMiniMax(scoredMove.Move, scoredMove, 1, true, gs, sh, sf);
             Debug.Log("==============================> score: " + value);
             Debug.Log("-----> Move: " + scoredMove.Move);
             scoredMove.SetScore(value);
@@ -61,16 +61,8 @@ public static class MiniMax
 
     private static float DoMiniMax(Vector2 nextMove, ScoredMove scoredMove, int depth, bool maximizingPlayer, GameState gs, StrategyHandler sh, ScoreFunction sf) {
         // Create a copy of the gamestate and apply the move option
+        GameState gsTemp = gs.Copy();
 
-        // TODO: There is still a bug in the gamestate copy, so for now just recreate the gamestate
-        //GameState gsTemp = gs.Copy();
-
-        GameState gsTemp = new GameState(gs.BottomLeft, gs.TopRight);
-        bool tempPlayer1 = true;
-        foreach(Vector2 point in gs.GetPoints()) {
-            gsTemp.AddPoint(point, tempPlayer1);
-            tempPlayer1 = !tempPlayer1;
-        }
         gsTemp.AddPoint(nextMove, !maximizingPlayer);
 
         if (depth <= 0) {
