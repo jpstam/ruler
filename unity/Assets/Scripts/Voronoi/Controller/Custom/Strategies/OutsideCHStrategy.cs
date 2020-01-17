@@ -9,10 +9,12 @@ public class OutsideCHStrategy : Strategy
 {
 
     protected float distance;
+    protected Strategy alternative; //used when only one point is present
 
-    public OutsideCHStrategy(float distance) : base()
+    public OutsideCHStrategy(float distance, Strategy alternative) : base()
     {
         this.distance = distance;
+        this.alternative = alternative;
     }
 
     public override List<Vector2> ComputeOptions(GameState gs, bool player1Move) {
@@ -21,7 +23,7 @@ public class OutsideCHStrategy : Strategy
         // too less
         if (gs.GetPoints().Count < 2)
         {
-            return options;
+            return alternative.ComputeOptions(gs, player1Move);
         }
 
         List<Vector2> cHull = CustomConvexHull.QuickHull(gs.GetPoints());
