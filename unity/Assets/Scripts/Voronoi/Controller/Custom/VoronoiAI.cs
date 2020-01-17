@@ -11,12 +11,18 @@ public class VoronoiAI : MonoBehaviour
     public bool DrawVoronoiDebug = false;
     public bool DrawConvexHull = false;
 
+    private bool player1;
+
     private Vector3 bottomLeft;
     private Vector3 topRight;
 
     public GameState gs { get; private set; }
     private StrategyHandler sh;
     private ScoreFunction sf;
+
+    public VoronoiAI(bool player1) : base() {
+        this.player1 = player1;
+    }
 
     // Use this for initialization
     void Start()
@@ -35,18 +41,21 @@ public class VoronoiAI : MonoBehaviour
         this.bottomLeft = bottomLeft;
         this.topRight = topRight;
         gs = new GameState(new Vector2(bottomLeft.x, bottomLeft.z), new Vector2(topRight.x, topRight.z));
-        sh = new StrategyHandler()
-            .Add(new OutsideCHStrategy(1f, new GridStrategy(7, 5)));
-            //.Add(new OutsideXYStrategy(1));
-            //.Add(new GridStrategy(7, 5));
-            //.Add(new RandomStrategy(4))
-            //.Add(new LargestCellStrategy());
+    }
 
-        // Select a score function used by the AI
-        sf = new AreaScore();
-        // sf = new DistanceScore();
-        // sf = new StandardDeviationScore();
-        // sf = new CircumferenceScore();
+    public void SetPlayer1(bool player1)
+    {
+        this.player1 = player1;
+    }
+
+    public void SetStrategyHandler(StrategyHandler sh)
+    {
+        this.sh = sh;
+    }
+
+    public void SetScoreFunction(ScoreFunction sf)
+    {
+        this.sf = sf;
     }
 
     public Vector2 GetMove()
@@ -58,7 +67,7 @@ public class VoronoiAI : MonoBehaviour
         }
 
         // Get the best move using the minimax algorithm
-        Vector2 move = MiniMax.GetBestMove(gs, sh, sf);
+        Vector2 move = MiniMax.GetBestMove(player1, gs, sh, sf);
 
         // Get all the options, used for debugging
         List<Vector2> options = MiniMax.GetOptions();
@@ -89,10 +98,10 @@ public class VoronoiAI : MonoBehaviour
         watch.Stop();
         Debug.Log("Added move " + move + " in " + watch.ElapsedMilliseconds + "ms");
 
-        watch = System.Diagnostics.Stopwatch.StartNew();
-        gs.Copy();
-        watch.Stop();
-        Debug.Log("Copied Gamestate in " + watch.ElapsedMilliseconds + "ms");
+        //watch = System.Diagnostics.Stopwatch.StartNew();
+        //gs.Copy();
+        //watch.Stop();
+        //Debug.Log("Copied Gamestate in " + watch.ElapsedMilliseconds + "ms");
 
     }
 

@@ -26,27 +26,42 @@ public static class MiniMax
 
     private static List<Vector2> storedOptions;
 
-    public static Vector2 GetBestMove(GameState gs, StrategyHandler sh, ScoreFunction sf) {
+    public static Vector2 GetBestMove(bool player1, GameState gs, StrategyHandler sh, ScoreFunction sf) {
         // First let the strategy handler determine all possible move options for this round
-        List<Vector2> options = sh.ComputeOptions(gs, false);
+        List<Vector2> options = sh.ComputeOptions(gs, player1);
 
         // Convert the options to scored moves
         List<ScoredMove> scoredMoves = options.ConvertAll(o => new ScoredMove(o));
 
         foreach (ScoredMove scoredMove in scoredMoves) {
-            float value = DoMiniMax(scoredMove.Move, scoredMove, 0, true, gs, sh, sf);
+            float value = DoMiniMax(scoredMove.Move, scoredMove, 1, !player1, gs, sh, sf);
             Debug.Log("==============================> score: " + value);
             Debug.Log("-----> Move: " + scoredMove.Move);
             scoredMove.SetScore(value);
         }
 
-        float min = float.MaxValue;
+        float bestScore;
+        if(player1) {
+            bestScore = float.MinValue;
+        } else {
+            bestScore = float.MaxValue;
+        }
         ScoredMove bestMove = scoredMoves[0];
         foreach (ScoredMove scoredMove in scoredMoves) {
-            if (scoredMove.Score < min) {
-                min = scoredMove.Score;
-                bestMove = scoredMove;
+            if(player1) {
+                // Maximize the score if minimax is used for player 1
+                if (scoredMove.Score > bestScore) {
+                    bestScore = scoredMove.Score;
+                    bestMove = scoredMove;
+                }
+            } else {
+                // Minimize the score if minimax is used for player 2
+                if (scoredMove.Score < bestScore) {
+                    bestScore = scoredMove.Score;
+                    bestMove = scoredMove;
+                }
             }
+            
         }
 
         Vector2 move = bestMove.Move;
@@ -61,16 +76,8 @@ public static class MiniMax
 
     private static float DoMiniMax(Vector2 nextMove, ScoredMove scoredMove, int depth, bool maximizingPlayer, GameState gs, StrategyHandler sh, ScoreFunction sf) {
         // Create a copy of the gamestate and apply the move option
+        GameState gsTemp = gs.Copy();
 
-        // TODO: There is still a bug in the gamestate copy, so for now just recreate the gamestate
-        //GameState gsTemp = gs.Copy();
-
-        GameState gsTemp = new GameState(gs.BottomLeft, gs.TopRight);
-        bool tempPlayer1 = true;
-        foreach(Vector2 point in gs.GetPoints()) {
-            gsTemp.AddPoint(point, tempPlayer1);
-            tempPlayer1 = !tempPlayer1;
-        }
         gsTemp.AddPoint(nextMove, !maximizingPlayer);
 
         if (depth <= 0) {

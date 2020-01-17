@@ -938,7 +938,6 @@ Transform:
   - {fileID: 4654266632637326}
   - {fileID: 224626418437048776}
   - {fileID: 4726868393657730}
-  - {fileID: 8111136054517689409}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -959,13 +958,15 @@ MonoBehaviour:
   m_Player2Prefab: {fileID: 1000013133559478, guid: a04ea7e041045463fa0803ec5fe15abf,
     type: 3}
   m_withLookAtOnPlacement: 1
-  useSecondPlayerAi: 0
+  useFirstPlayerAi: 0
+  useSecondPlayerAi: 1
   m_turns: 5
   m_p1Victory: blueVictory
   m_p2Victory: redVictory
   m_GUIManager: {fileID: 114510981710087804}
   m_meshFilter: {fileID: 33369199139835590}
-  m_voronoiAI: {fileID: 7682261921010155715}
+  m_voronoiAI1: {fileID: 0}
+  m_voronoiAI2: {fileID: 0}
 --- !u!1 &1601536099078710
 GameObject:
   m_ObjectHideFlags: 0
@@ -1224,50 +1225,3 @@ Transform:
   m_Father: {fileID: 4723526428128988}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1640650537996135120
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8111136054517689409}
-  - component: {fileID: 7682261921010155715}
-  m_Layer: 0
-  m_Name: VoronoiAI
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8111136054517689409
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1640650537996135120}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4723526428128988}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7682261921010155715
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1640650537996135120}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 997185a3292f3a249a61f65bce624e82, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DrawDelauneyTriangulation: 1
-  DrawDelauneyDebug: 1
-  DrawVoronoiDiagram: 1
-  DrawVoronoiDebug: 1
