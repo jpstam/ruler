@@ -52,7 +52,7 @@ public class GameState
         this.TopRight = new Vector2(original.TopRight.x, original.TopRight.y);
         this.Delauney = original.Delauney.Copy();
         this.Voronoi = original.Voronoi.Copy();
-        this.Points = original.Points;
+        this.Points = new List<Vector2>(original.Points);
 
         foreach(Face face in this.Voronoi.Faces.Values) {
             face.CalculateCutPolygon(BottomLeft, TopRight);
