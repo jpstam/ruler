@@ -115,7 +115,11 @@ public class GameState
 
         var newFace = new Face(vertex);
         newFace.OwnedByPlayer1 = playerOne;
-        Voronoi.Faces.Add(vertex, newFace);
+        try {
+            Voronoi.Faces.Add(vertex, newFace);
+        } catch(System.ArgumentException e) {
+            Debug.LogError("Exception: " + e);
+        }
 
         foreach(Triangle triangle in newTriangles) {
             if(!triangle.Boundary) {

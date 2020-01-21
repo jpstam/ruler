@@ -51,10 +51,7 @@ public class Triangle
         var div = (2 * (p0.X * (p2.Y - p1.Y) + p1.X * (p0.Y - p2.Y) + p2.X * (p1.Y - p0.Y)));
 
         if(div == 0) {
-            Debug.LogError(p0);
-            Debug.LogError(p1);
-            Debug.LogError(p2);
-            throw new System.Exception();
+            div += float.Epsilon;
         }
 
         var center = new Vector2(aux1 / div, aux2 / div);

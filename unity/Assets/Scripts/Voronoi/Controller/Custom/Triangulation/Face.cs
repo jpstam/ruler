@@ -132,7 +132,9 @@ public class Face
             var endInside = IsPointInRectangle(next.Value.end.point, bottomLeft, topRight);
             if(startInside && endInside) {
                 var vertex = GetAdjustedStart(next.Value);
-                PartialCutPolygon.Add(vertex, vertex);
+                if(vertex != null) {
+                    PartialCutPolygon.Add(vertex, vertex);
+                }
             } else {
                 if(IsPointInRectangle(GetAdjustedStart(next.Value).point, bottomLeft, topRight)) {
                     var vertex = GetAdjustedStart(next.Value);
