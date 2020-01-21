@@ -142,6 +142,11 @@
                 VoronoiDrawer.VoronoiOn = !VoronoiDrawer.VoronoiOn;
             }
 
+            if(Input.GetKeyDown("t")) {
+                Debug.Log("Start Gamestate copy test:");
+                TestGamestateCopy.Test(m_voronoiAI1.gs);
+            }
+
             if(Input.GetMouseButtonDown(0)) {
                 ProcessTurn();
             }

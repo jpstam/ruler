@@ -35,8 +35,8 @@ public static class MiniMax
 
         foreach (ScoredMove scoredMove in scoredMoves) {
             float value = DoMiniMax(scoredMove.Move, scoredMove, 1, !player1, gs, sh, sf);
-            Debug.Log("==============================> score: " + value);
-            Debug.Log("-----> Move: " + scoredMove.Move);
+            // Debug.Log("==============================> score: " + value);
+            // Debug.Log("-----> Move: " + scoredMove.Move);
             scoredMove.SetScore(value);
         }
 

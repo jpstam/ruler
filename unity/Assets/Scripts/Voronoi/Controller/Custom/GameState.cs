@@ -24,7 +24,7 @@ public class GameState
     {
         this.BottomLeft = bottomLeft;
         this.TopRight = topRight;
-        Debug.Log(BottomLeft + " " + topRight);
+        // Debug.Log(BottomLeft + " " + topRight);
         // Initialize Data Structures
         Delauney = new Triangulation();
         Voronoi = new Graph();
