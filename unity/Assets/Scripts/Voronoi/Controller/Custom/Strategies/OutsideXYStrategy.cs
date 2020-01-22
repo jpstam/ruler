@@ -6,13 +6,20 @@ public class OutsideXYStrategy : Strategy
 {
 
     protected float distance;
+    protected Strategy alternative;
 
-    public OutsideXYStrategy(float distance) : base()
+    public OutsideXYStrategy(float distance, Strategy alternative) : base()
     {
         this.distance = distance;
+        this.alternative = alternative;
     }
 
     public override List<Vector2> ComputeOptions(GameState gs, bool player1Move) {
+        if (gs.GetPoints().Count < 1)
+        {
+            return alternative.ComputeOptions(gs, player1Move);
+        }
+
         List<Vector2> options = new List<Vector2>();
 
         Vector2 left = gs.TopRight;

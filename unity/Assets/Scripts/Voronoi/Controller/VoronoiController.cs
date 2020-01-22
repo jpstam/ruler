@@ -103,16 +103,16 @@
 
 
             StrategyHandler sh1 = new StrategyHandler()
-                .Add(new OutsideCHStrategy(1f, new RandomStrategy(4)))
-                .Add(new GridStrategy(6, 4))
-                //.Add(new RandomStrategy(4))
-                .Add(new LargestCellStrategy());
+                .Add(new OutsideCHStrategy(1f, new RandomStrategy(1)));
+                //.Add(new GridStrategy(6, 4))
+                //.Add(new RandomStrategy(25));
+                //.Add(new LargestCellStrategy());
 
             StrategyHandler sh2 = new StrategyHandler()
-                .Add(new OutsideCHStrategy(1f, new RandomStrategy(4)))
-                .Add(new GridStrategy(6, 4))
-                //.Add(new RandomStrategy(4))
-                .Add(new LargestCellStrategy());
+                //.Add(new OutsideCHStrategy(1f, new RandomStrategy(4)))
+                //.Add(new GridStrategy(6, 4))
+                .Add(new RandomStrategy(25));
+                //.Add(new LargestCellStrategy());
 
             m_voronoiAI1.SetStrategyHandler(sh1);
             m_voronoiAI2.SetStrategyHandler(sh2);
