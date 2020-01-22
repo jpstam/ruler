@@ -34,6 +34,7 @@ public static class MiniMax
         List<ScoredMove> scoredMoves = options.ConvertAll(o => new ScoredMove(o));
 
         foreach (ScoredMove scoredMove in scoredMoves) {
+            // The depth specified is the number of moves after the first next move
             float value = DoMiniMax(scoredMove.Move, scoredMove, 1, !player1, gs, sh, sf);
             // Debug.Log("==============================> score: " + value);
             // Debug.Log("-----> Move: " + scoredMove.Move);

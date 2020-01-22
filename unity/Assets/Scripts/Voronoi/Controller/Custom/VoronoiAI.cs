@@ -66,11 +66,18 @@ public class VoronoiAI : MonoBehaviour
             Destroy(go);
         }
 
+        // Start a timer for measuring the minimax duration
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+
         // Get the best move using the minimax algorithm
         Vector2 move = MiniMax.GetBestMove(player1, gs, sh, sf);
 
+        watch.Stop();
+
         // Get all the options, used for debugging
         List<Vector2> options = MiniMax.GetOptions();
+
+        Debug.Log("TEST: Minimax time: " + watch.ElapsedMilliseconds + "ms with " + options.Count + " move options");
 
         // For each option, add a sphere to visualize the options
         foreach (Vector2 option in options) {
