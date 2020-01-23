@@ -86,44 +86,56 @@
                     new Vector2(topRight.x, bottomLeft.z)
                 });
 
-            GameObject goVoronoiAI1 = new GameObject();
-            GameObject goVoronoiAI2 = new GameObject();
+            if(useFirstPlayerAi) {
+                GameObject goVoronoiAI1 = new GameObject("Ai player 1");
+                m_voronoiAI1 = goVoronoiAI1.AddComponent<VoronoiAI>();
+                m_voronoiAI1.SetPlayer1(true);
 
-            m_voronoiAI1 = goVoronoiAI1.AddComponent<VoronoiAI>();
-            m_voronoiAI1.SetPlayer1(true);
-            m_voronoiAI2 = goVoronoiAI2.AddComponent<VoronoiAI>();
-            m_voronoiAI2.SetPlayer1(false);
+                m_voronoiAI1.SetCorners(bottomLeft, topRight);
 
-            m_voronoiAI1.DrawBorders = true;
-            m_voronoiAI1.DrawVoronoiDiagram = true;
-            m_voronoiAI1.DrawVoronoiDebug = true;
+                m_voronoiAI1.DrawBorders = true;
+                m_voronoiAI1.DrawDelauneyTriangulation = true;
+                m_voronoiAI1.DrawVoronoiDiagram = true;
 
-            m_voronoiAI1.SetCorners(bottomLeft, topRight);
-            m_voronoiAI2.SetCorners(bottomLeft, topRight);
-
-
-            StrategyHandler sh1 = new StrategyHandler()
+                StrategyHandler sh1 = new StrategyHandler()
                 .Add(new OutsideCHStrategy(1f, new RandomStrategy(1)));
                 //.Add(new GridStrategy(6, 4))
                 //.Add(new RandomStrategy(25));
                 //.Add(new LargestCellStrategy());
+                m_voronoiAI1.SetStrategyHandler(sh1);
+                // Select a score function used by the AI
+                // new AreaScore();
+                // new DistanceScore();
+                // new StandardDeviationScore();
+                // new CircumferenceScore();
+                m_voronoiAI1.SetScoreFunction(new AreaScore());
+            }
+            if(useSecondPlayerAi) {
+                GameObject goVoronoiAI2 = new GameObject("Ai player 2");
 
-            StrategyHandler sh2 = new StrategyHandler()
+                m_voronoiAI2 = goVoronoiAI2.AddComponent<VoronoiAI>();
+                m_voronoiAI2.SetPlayer1(false);
+                m_voronoiAI2.SetCorners(bottomLeft, topRight);
+
+                if(!useFirstPlayerAi) {
+                    m_voronoiAI2.DrawBorders = true;
+                    m_voronoiAI2.DrawDelauneyTriangulation = true;
+                    m_voronoiAI2.DrawVoronoiDiagram = true;
+                }
+
+                StrategyHandler sh2 = new StrategyHandler()
                 //.Add(new OutsideCHStrategy(1f, new RandomStrategy(4)))
                 //.Add(new GridStrategy(6, 4))
                 .Add(new RandomStrategy(25));
                 //.Add(new LargestCellStrategy());
-
-            m_voronoiAI1.SetStrategyHandler(sh1);
-            m_voronoiAI2.SetStrategyHandler(sh2);
-
-            // Select a score function used by the AI
-            // new AreaScore();
-            // new DistanceScore();
-            // new StandardDeviationScore();
-            // new CircumferenceScore();
-            m_voronoiAI1.SetScoreFunction(new AreaScore());
-            m_voronoiAI2.SetScoreFunction(new AreaScore());
+                m_voronoiAI2.SetStrategyHandler(sh2);
+                // Select a score function used by the AI
+                // new AreaScore();
+                // new DistanceScore();
+                // new StandardDeviationScore();
+                // new CircumferenceScore();
+                m_voronoiAI2.SetScoreFunction(new AreaScore());
+            }
 
             VoronoiDrawer.CreateLineMaterial();
         }
@@ -317,12 +329,21 @@
                 }
 
                 // Store the vertex in the data structure of the AI
-                m_voronoiAI1.AddMove(me, player1Turn);
-                m_voronoiAI2.AddMove(me, player1Turn);
+                if(useFirstPlayerAi) {
+                    m_voronoiAI1.AddMove(me, player1Turn);
+                    // Log the area computed by the voronoi AI
+                    float[] areas = m_voronoiAI1.gs.Voronoi.ComputeArea();
+                    Debug.Log("Area: " + areas[0] + " - " + areas[1]);
+                }
+                if(useSecondPlayerAi) {
+                    m_voronoiAI2.AddMove(me, player1Turn);
+                    if(!useFirstPlayerAi) {
+                        // Log the area computed by the voronoi AI
+                        float[] areas = m_voronoiAI2.gs.Voronoi.ComputeArea();
+                        Debug.Log("Area: " + areas[0] + " - " + areas[1]);
+                    }
+                }
 
-                // Log the area computed by the voronoi AI
-                float[] areas = m_voronoiAI2.gs.Voronoi.ComputeArea();
-                Debug.Log("Area: " + areas[0] + " - " + areas[1]);
 
                 // store owner of vertex
                 m_ownership.Add(me, player1Turn ? EOwnership.PLAYER1 : EOwnership.PLAYER2);

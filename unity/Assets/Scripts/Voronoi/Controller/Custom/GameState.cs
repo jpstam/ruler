@@ -118,7 +118,7 @@ public class GameState
         try {
             Voronoi.Faces.Add(vertex, newFace);
         } catch(System.ArgumentException e) {
-            Debug.LogError("Exception: " + e);
+            //Debug.LogError("Exception: " + e);
         }
 
         foreach(Triangle triangle in newTriangles) {
@@ -160,7 +160,7 @@ public class GameState
         return new GameState(this);
     }
 
-    public void DebugDraw(float y, bool borders, bool delauney, bool delauneyDebug, bool voronoi, bool voronoiDebug, bool hull)
+    public void DebugDraw(float y, bool borders, bool delauney, bool delauneyDebug, bool voronoi, bool voronoiDebug, bool facesDebug, bool hull)
     {
         if(borders) {
             Debug.DrawLine(new Vector3(BottomLeft.x, y, BottomLeft.y), new Vector3(BottomLeft.x, y, TopRight.y), Color.white, 0);
@@ -194,44 +194,39 @@ public class GameState
             foreach(Edge e in newVoronoiEdges) {
                 Debug.DrawLine(new Vector3(e.start.X, y, e.start.Y), new Vector3(e.end.X, y, e.end.Y), Color.cyan, 0);
             }
+        }
 
-            //foreach(Face face in Voronoi.faces.Values) {
-            //    foreach(Edge e in face.Edges.Values) {
-            //        Debug.DrawLine(new Vector3(e.start.X, y, e.start.Y), new Vector3(e.end.X, y, e.end.Y), Color.magenta, 0);
-            //    }
-            //}
+        //// Draw Lines to Voronoi Points;
+        //foreach(Edge e in Voronoi.Edges.Keys) {
+        //    var middle = new Vector3((e.start.X + e.end.X) / 2, y, (e.start.Y + e.end.Y) / 2);
+        //    var left = new Vector3(e.left.Point.X, y, e.left.Point.Y);
+        //    var right = new Vector3(e.right.Point.X, y, e.right.Point.Y);
+        //    Debug.DrawLine(middle, left, Color.green, 0);
+        //    Debug.DrawLine(middle, right, Color.red, 0);
+        //}
 
-            // Draw Lines to Voronoi Points;
-            //foreach(Edge e in Voronoi.Edges.Keys) {
-            //    var middle = new Vector3((e.start.X + e.end.X) / 2, y, (e.start.Y + e.end.Y) / 2);
-            //    var left = new Vector3(e.left.Point.X, y, e.left.Point.Y);
-            //    var right = new Vector3(e.right.Point.X, y, e.right.Point.Y);
-            //    Debug.DrawLine(middle, left, Color.green, 0);
-            //    Debug.DrawLine(middle, right, Color.red, 0);
-            //}
+        //// Draw Lines to Circumcircle centers
+        // foreach(Triangle t in Delauney.triangles) {
+        //     if(t.Boundary) continue;
+        //     Debug.DrawLine(new Vector3(t.p0.X, y, t.p0.Y), new Vector3(t.Circumcenter.x, y, t.Circumcenter.y), Color.magenta, 0);
+        //     Debug.DrawLine(new Vector3(t.p1.X, y, t.p1.Y), new Vector3(t.Circumcenter.x, y, t.Circumcenter.y), Color.magenta, 0);
+        //     Debug.DrawLine(new Vector3(t.p2.X, y, t.p2.Y), new Vector3(t.Circumcenter.x, y, t.Circumcenter.y), Color.magenta, 0);
+        // }
 
-            // Draw Lines to Circumcircle centers
-            // foreach(Triangle t in Delauney.triangles) {
-            //     if(t.Boundary) continue;
-            //     Debug.DrawLine(new Vector3(t.p0.X, y, t.p0.Y), new Vector3(t.Circumcenter.x, y, t.Circumcenter.y), Color.magenta, 0);
-            //     Debug.DrawLine(new Vector3(t.p1.X, y, t.p1.Y), new Vector3(t.Circumcenter.x, y, t.Circumcenter.y), Color.magenta, 0);
-            //     Debug.DrawLine(new Vector3(t.p2.X, y, t.p2.Y), new Vector3(t.Circumcenter.x, y, t.Circumcenter.y), Color.magenta, 0);
-            // }
+        ////Draw incomplete Voronoi cells
+        //foreach(Face f in Voronoi.Faces.Values) {
+        //    if(f.IsComplete) continue;
+        //    if(f.Start == f.End) continue;
 
-            //Draw incomplete Voronoi cells
-            //foreach(Face f in Voronoi.Faces.Values) {
-            //    if(f.IsComplete) continue;
-            //    if(f.Start == f.End) continue;
+        //    var middle = new Vector3(f.Point.X, y, f.Point.Y);
+        //    var start = f.GetAdjustedStart(f.Start);
+        //    var end = f.GetAdjustedEnd(f.End);
 
-            //    var middle = new Vector3(f.Point.X, y, f.Point.Y);
-            //    var start = f.GetAdjustedStart(f.Start);
-            //    var end = f.GetAdjustedEnd(f.End);
+        //    Debug.DrawLine(middle, new Vector3(start.X, y, start.Y), Color.magenta, 0);
+        //    Debug.DrawLine(middle, new Vector3(end.X, y, end.Y), Color.magenta, 0);
+        //}
 
-            //    Debug.DrawLine(middle, new Vector3(start.X, y, start.Y), Color.magenta, 0);
-            //    Debug.DrawLine(middle, new Vector3(end.X, y, end.Y), Color.magenta, 0);
-            //}
-
-
+        if(facesDebug) {
             foreach(Face f in Voronoi.Faces.Values) {
                 if(f.CutPolygon == null) continue;
                 if(f.CutPolygon.Count < 2) continue;
@@ -244,14 +239,15 @@ public class GameState
                 }
             }
 
-            foreach(Face f in Voronoi.Faces.Values) {
-                if (f.ContainsPoint(TopRight)) {
-                    Debug.DrawLine(new Vector3(f.Point.X, y, f.Point.Y), new Vector3(TopRight.x, y, TopRight.y), Color.red, 0);
-                }
-                if(f.ContainsPoint(BottomLeft)) {
-                    Debug.DrawLine(new Vector3(f.Point.X, y, f.Point.Y), new Vector3(BottomLeft.x, y, BottomLeft.y), Color.red, 0);
-                }
-            }
+            ////Show if face contains corners
+            //foreach(Face f in Voronoi.Faces.Values) {
+            //    if (f.ContainsPoint(TopRight)) {
+            //        Debug.DrawLine(new Vector3(f.Point.X, y, f.Point.Y), new Vector3(TopRight.x, y, TopRight.y), Color.red, 0);
+            //    }
+            //    if(f.ContainsPoint(BottomLeft)) {
+            //        Debug.DrawLine(new Vector3(f.Point.X, y, f.Point.Y), new Vector3(BottomLeft.x, y, BottomLeft.y), Color.red, 0);
+            //    }
+            //}
         }
 
         if (hull)

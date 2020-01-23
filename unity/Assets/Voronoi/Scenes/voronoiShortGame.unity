@@ -151,16 +151,6 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114037368115287476, guid: 86d3873bedcc5844d9cae542df0cc883,
-        type: 3}
-      propertyPath: useSecondPlayerAi
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114037368115287476, guid: 86d3873bedcc5844d9cae542df0cc883,
-        type: 3}
-      propertyPath: useFirstPlayerAi
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7682261921010155715, guid: 86d3873bedcc5844d9cae542df0cc883,
         type: 3}
       propertyPath: DrawBorders

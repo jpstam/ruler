@@ -9,6 +9,7 @@ public class VoronoiAI : MonoBehaviour
     public bool DrawDelauneyDebug = false;
     public bool DrawVoronoiDiagram = false;
     public bool DrawVoronoiDebug = false;
+    public bool DrawFacesDebug = false;
     public bool DrawConvexHull = false;
 
     private bool player1;
@@ -33,7 +34,7 @@ public class VoronoiAI : MonoBehaviour
     void FixedUpdate()
     {
         if (gs != null)
-            gs.DebugDraw(bottomLeft.y, DrawBorders, DrawDelauneyTriangulation, DrawDelauneyDebug, DrawVoronoiDiagram, DrawVoronoiDebug, DrawConvexHull);
+            gs.DebugDraw(bottomLeft.y, DrawBorders, DrawDelauneyTriangulation, DrawDelauneyDebug, DrawVoronoiDiagram, DrawVoronoiDebug, DrawFacesDebug, DrawConvexHull);
     }
 
     public void SetCorners(Vector3 bottomLeft, Vector3 topRight)
@@ -77,7 +78,7 @@ public class VoronoiAI : MonoBehaviour
         // Get all the options, used for debugging
         List<Vector2> options = MiniMax.GetOptions();
 
-        Debug.Log("TEST: Minimax time: " + watch.ElapsedMilliseconds + "ms with " + options.Count + " move options");
+        Debug.Log("Minimax time: " + watch.ElapsedMilliseconds + "ms with " + options.Count + " move options");
 
         // For each option, add a sphere to visualize the options
         foreach (Vector2 option in options) {
